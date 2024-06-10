@@ -5,13 +5,13 @@ project:
 book:
   title: "Title of the thesis"
   author:
-    - name: Dr. Julien Vitay 
-      email: julien.vitay@informatik.tu-chemnitz.de
-      url: https://julien-vitay.net
+    - name: Aida Farahani 
+      email: aida.farahani@informatik.tu-chemnitz.de
+      url: https://hex41434.github.io/
       affiliation: Chemnitz University of Technology
       affiliation-url: https://tu-chemnitz.de
-      orcid: 0000-0001-5229-2349
-  date: "2017"
+      orcid: 0000-0000-0000-0000
+  date: "2024"
   date-format: "YYYY"
 
   
@@ -78,9 +78,9 @@ format:
       - assets/before-body.tex
     logo: img/tuc.png
     info:
-        - Geboren am 11.12.1979 in Saint-Nazaire (Frankreich)
+        - Geboren am 03.05.1985 in Tehran (Iran)
     genre-text: "Dissertation zur Erlangung des akademischen Grades"
-    genre: "Dr. habil"
+    genre: "PhD"
     lab: Professur für künstliche Intelligenz
     department: Fakultät für Informatik 
     university: Technische Universität Chemnitz

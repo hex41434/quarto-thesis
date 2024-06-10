@@ -1,1 +1,32 @@
 # Methods {#sec-methods}
+
+## Single Step Deformation
+
+Single Step Deformation (SSD) is the deformation of the shape, after applying a force on the surface. in original deepsdf paper, the NN could generalize among all the different 3d shapes in the dataset. in our problem, we have the deformations of one shape. 
+
+![image caption](img/interpolate_sdf_codes.png){#fig-interp_sdf_codes fig-align="center" width="50%"}
+
+### SSD on Watertight Mesh
+
+in deepsdf, the object mesh is required to be watertight. which means that the object surface devides the input and output space to distinguish the positive and negative distances from the surface. for this purpose, the dataset XX has been used. first we need to convert the mesh to a sdf representation. The mesh is centered to zero and down scaled inside a unit sphere.   
+
+### SSD on non-Watertight Mesh
+
+the data provided by our industrial partner however, was non-watertight. therefore the original deepsdf method ould not be applied there. instead we modify the input and train the neural network. the network could predict the thickness, thinning and deviation with an acceptable error.
+
+#### 1D approach 
+cross section
+
+#### 2D approach
+by using a 2d representation of top surface (uv map)...
+
+#### 3D approach
+providing the x,y,z coordinates of the mesh elements and corresponding properties: thickness, thinning and deviation, the trained network could provide a good estimation of these properties.
+
+## Multi Step Deformation
+
+This chapter explores the multi-step deformation process of a metal cuboid that is fixed at the bottom while sequential force vectors are applied to the top. The objective is to achieve a desired shape through a series of deformations. The Cross Entropy Method (CEM) is employed to find the optimal sequence of forces, and a trained DeepSDF Neural Network (similar to one in single step deformation) is employed to predict the deformation at each step.
+
+The Cross Entropy Method (CEM) is employed to identify the optimal sequence of force vectors through several key steps. Initially, a distribution over possible force vectors is initialized. From this distribution, a set of action sequences is sampled. Each sequence is then evaluated by simulating the deformation process using the neural network, with performance measured by comparing the deformed shape to the desired shape. Based on these evaluations, the distribution is updated to focus on better-performing sequences, increasing the likelihood of sampling optimal sequences in subsequent iterations. This iterative process continues until the deformation sequence converges to an optimal solution.
+
+The optimization continues until a convergence criterion is met. The criterion is defined based on the similarity between the deformed shape and the target shape. Once convergence is achieved, the final sequence of force vectors represents the optimal strategy for achieving the desired deformation.
