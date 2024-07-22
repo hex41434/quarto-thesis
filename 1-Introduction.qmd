@@ -1,50 +1,38 @@
 # Introduction {#sec-introduction}
 
-## First subsection
+Artificial intelligence (AI) has become a headline topic in today's news, capturing the attention of individuals across various fields eager to leverage its capabilities to enhance their work. Historically, computers were introduced to take on repetitive and mundane tasks, leading to significant advancements in processing speed, communication infrastructures, and storage capacities. However, with the advent of sophisticated AI algorithms, we are now faced with a new level of challenges and solutions.
 
-References: @Scholl2022 showed that XXX [@Vitay2017].
+In the past, problem-solving involved identifying the issue and explicitly programming the computer to transform input data into desired outputs. Software specialists had to meticulously define every step of the problem-solving process to achieve the correct outcome. This traditional method required a deep understanding of the problem and the logic needed to solve it.
 
-Cross-references: See @fig-dopamine, @eq-ratecoded, @lst-EI, @sec-admonitions and @sec-results.
+The emergence of AI, however, has revolutionized this approach. Instead of explicitly programming each step, we now provide the system with vast amounts of data, allowing it to "learn" and adjust itself to achieve the desired results. This learning process enables AI to tackle problems that were previously unsolvable using classical methods. By training models with large datasets, AI systems develop the capability to make predictions, recognize patterns, and generate insights without human intervention in the learning process.
 
-![Afferent system to VTA. [@Vitay2017]](img/dopamine.jpg){#fig-dopamine width=50%}
+This shift from explicit programming to machine learning opens up possibilities for addressing complex problems across diverse domains. The challenge now lies in selecting the appropriate type of learning—supervised, unsupervised, or reinforcement learning—based on the nature of the problem and the available data. Understanding the strengths and limitations of each learning type is essential for effectively harnessing AI to solve real-world problems.From art and entertainment to industry, manufacturing, and healthcare, AI's transformative impact is evident. These developments underscore the necessity for individuals and organizations to embrace AI, leveraging its potential to drive innovation, efficiency, and improvements in various domains. As AI continues to evolve, its integration into diverse fields becomes increasingly imperative, highlighting the importance of understanding and utilizing AI to remain competitive and progressive.
 
-Equations:
+## Problem Statement
 
-$$
-    \tau \, \frac{dx_j(t)}{dt} + x_j(t)= \sum_i w^{in}_{ij} \, r^{in}_i(t) + g \, \sum_{i \neq j} w^{rec}_{ij} \, r_i(t)
-$$ {#eq-ratecoded}
+### ml\@karoprod BMBF Project
 
+Title: Machine Learning for the Prediction of Process Parameters and Component Quality in Automotive Body Production (ML\@Karoprod)
 
-## Second subsection {#sec-admonitions}
+The goal of the project from the perspective of machine learning is to develop predictive models that enable the prediction of the shape of a metal plate after a series of operations. currently : by FEM experts
 
-Admonitions:
+The simulated deep drawing data consists of 880 valid experiments characterized by a series of process parameters: blank holder force, insertion position, material ID, punch ID, etc. In collaboration with our partners, we have identified the relevant set of features that are necessary and sufficient to fully determine the effects of a simulation, and we have also examined their influence using feature importance algorithms.
 
-::: {.callout-note}
-## Nota Bene
+|                                                            |         |         |
+|---------------------------------------|-----------------|-----------------|
+| Input parameters                                           | From    | to      |
+| die diameter                                               | 7.5mm   | 12.5mm  |
+| die depth in relation to total sheet thickness             | 0.2     | 0.6     |
+| die diameter bottom in relation to punch diameter          | 0.8     | 1.2     |
+| angle die bottom                                           | 15 deg  | 45 deg  |
+| angle die side face                                        | 0 deg   | 5 deg   |
+| punch diameter in relation to die diameter                 | 0.5     | 0.75    |
+| radius punch                                               | 0.25mm  | 0.5mm   |
+| angle punch face                                           | 0 deg   | 2 deg   |
+| angle punch side face                                      | 0 deg   | 4 deg   |
+| thickness upper sheet in relation to total sheet thickness | 0.2     | 0.8     |
+| bottom thickness                                           | 0.589mm | 5.035mm |
 
-Important information.
-:::
+![The reference mesh for extracting face centers (Drawing depth Zt=70).](img/Chp1/banana_1.png){fig-align="left" width="40%"}
 
-Code snippets:
-
-:::{#lst-EI}
-```{.python}
-import numpy as np
-import ANNarchy as ann
-
-P = ann.Population(geometry=1000, neuron=ann.Izhikevich)
-E = P[:800] ; I = P[800:]
-
-EI = ann.Projection(pre=E, post=P, target='exc')
-EI.connect_all_to_all(weights=ann.Uniform(0.0, 0.5))
-   
-IE = ann.Projection(pre=I, post=P, target='inh')
-IE.connect_all_to_all(weights=ann.Uniform(0.0, 1.0))
-
-ann.compile()
-
-ann.simulate(1000.0, measure_time=True)
-```
-
-Simple EI network in ANNarchy. 
-:::
+![The same mesh in a closer view](img/Chp1/banana_zoom.png){fig-align="left" width="40%"}

@@ -1,9 +1,21 @@
 # State of the art {#sec-sota}
 
-this is a test for state-of-the-art section...
+## FEM Simulations and applications
 
-## test 2 
-this section is bluh bluh 
+### current advancements and challenges
 
-## testingu
-hala way wy
+### Mesh-Free methods 
+
+## Explicit representations
+
+Convoutional Mesh AutoEncoder @ranjan2018generating
+
+The Convolutional Mesh AutoEncoder (CoMA), introduced in 2017, is a neural network architecture specifically designed for processing 3D mesh data. Unlike traditional autoencoders, which work well with regular grid data such as images, CoMA effectively handles the irregular structure of meshes by extending convolutional operations to graph structures. The architecture features an encoder-decoder structure with four layers each in the encoder and decoder, maintaining symmetry. The encoder compresses the mesh data into a latent space using spectral graph convolutional layers, while the decoder reconstructs the mesh from this compact representation. This design allows CoMA to learn high-level, compact representations of 3D shapes while preserving their geometric properties.
+
+A notable innovation in CoMA is its ability to handle the irregular topology of meshes through spectral graph convolutions, which work in the frequency domain. The model uses Chebyshev polynomials and fast localized convolutions to process mesh data efficiently. The architecture includes downsampling and upsampling operations, enabling it to manage different levels of mesh resolution. This approach makes CoMA scalable to complex and high-resolution meshes. The model has demonstrated strong performance in tasks such as 3D shape reconstruction, facial expression synthesis, and deformation transfer, showcasing its potential for various applications in computer graphics and 3D modeling.
+
+## Physics informed Neural Networks (PINN)
+
+## DeepSDF
+
+@park2019deepsdf
