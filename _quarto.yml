@@ -3,14 +3,14 @@ project:
   output-dir: ./docs
 
 book:
-  title: "Title of the thesis"
+  title: "Title of the thesis :D "
   author:
     - name: Aida Farahani 
       email: aida.farahani@informatik.tu-chemnitz.de
       url: https://hex41434.github.io/
       affiliation: Chemnitz University of Technology
       affiliation-url: https://tu-chemnitz.de
-      orcid: 0000-0000-0000-0000
+      orcid: 0000-0002-1758-0924
   date: "2024"
   date-format: "YYYY"
 
@@ -22,6 +22,7 @@ book:
     - 3-Methods.qmd
     - 4-Results.qmd
     - 5-Discussion.qmd
+    - 6-Chapter.qmd
     - References.qmd
 
   output-file: "thesis"

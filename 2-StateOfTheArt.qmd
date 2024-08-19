@@ -2,20 +2,311 @@
 
 ## FEM Simulations and applications
 
-### current advancements and challenges
+The Finite Element Method (FEM) is a powerful computational technique used for solving complex structural, fluid, and thermal problems in engineering and physical sciences. It works by breaking down a large problem into smaller, simpler parts known as finite elements, and then systematically solving these elements to understand the behavior of the entire system.
 
-### Mesh-Free methods 
+FEM is a numerical approximation of the continuous solution field $u$ of any partial differential equation (PDE) given by Eq. (1) on a given domain $\Omega$ can be performed by various methods. Some of the widely used techniques include finite element method \[ref1\], finite volume method \[ref2\], particle methods \[ref3\], and finite cell method \[ref4\]. In this contribution, we restrict the discussion to Galerkin-based finite element methods.
 
-## Explicit representations
+$$
+\mathcal{L}(u) = 0 \quad \text{on } \Omega
+$$
 
-Convoutional Mesh AutoEncoder @ranjan2018generating
+$$
+u = u_d \quad \text{on } \Gamma_D
+$$
 
-The Convolutional Mesh AutoEncoder (CoMA), introduced in 2017, is a neural network architecture specifically designed for processing 3D mesh data. Unlike traditional autoencoders, which work well with regular grid data such as images, CoMA effectively handles the irregular structure of meshes by extending convolutional operations to graph structures. The architecture features an encoder-decoder structure with four layers each in the encoder and decoder, maintaining symmetry. The encoder compresses the mesh data into a latent space using spectral graph convolutional layers, while the decoder reconstructs the mesh from this compact representation. This design allows CoMA to learn high-level, compact representations of 3D shapes while preserving their geometric properties.
+$$
+\frac{\partial u}{\partial x} = g \quad \text{on } \Gamma_N
+$$
 
-A notable innovation in CoMA is its ability to handle the irregular topology of meshes through spectral graph convolutions, which work in the frequency domain. The model uses Chebyshev polynomials and fast localized convolutions to process mesh data efficiently. The architecture includes downsampling and upsampling operations, enabling it to manage different levels of mesh resolution. This approach makes CoMA scalable to complex and high-resolution meshes. The model has demonstrated strong performance in tasks such as 3D shape reconstruction, facial expression synthesis, and deformation transfer, showcasing its potential for various applications in computer graphics and 3D modeling.
+Consider the PDE in Eq. (1) defined on a domain $\Omega$ together with the boundary conditions given by Eqs. 2 and 3. Here, $u_d$ and $g$ are the Dirichlet and Neumann boundary conditions on the respective boundaries. A finite element formulation of Eq. (1) on a discretization of the domain with $m$ elements and $n$ nodes, together with boundary conditions, will result in the system of equations shown by Eq. (4). We assume all the necessary conditions on the test and trial spaces \[ref1\] are fulfilled.
 
-## Physics informed Neural Networks (PINN)
+$$
+\begin{pmatrix}
+k_{1,1} & k_{1,2} & \cdots & k_{1,n} \\
+k_{2,1} & k_{2,2} & \cdots & k_{2,n} \\
+\vdots & \vdots & \ddots & \vdots \\
+k_{n,1} & k_{n,2} & \cdots & k_{n,n}
+\end{pmatrix}
+\begin{pmatrix}
+u_1 \\
+u_2 \\
+\vdots \\
+u_n
+\end{pmatrix} =
+\begin{pmatrix}
+F_1 \\
+F_2 \\
+\vdots \\
+F_n
+\end{pmatrix}
+$$
 
-## DeepSDF
+In Eq. (4), $\mathbf{K}(u)$ is the non-linear left hand side matrix, also called the stiffness matrix. $\mathbf{u}$ is the discrete solution field, and $\mathbf{F}$ is the right hand side vector. The residual of the system of equations in Eq. (4) can be written as
 
-@park2019deepsdf
+$$
+r(u^h) = K(u^h)u^h - F
+$$
+
+To obtain the solution $u^h$, a Newton–Raphson iteration technique can be employed using the linearization of $r(u^h)$ and its tangent matrix. This requires the solution of a linear system of equations in every iteration. These iterations are carried out until the residual norm $\|r(u^h)\|$ meets the tolerance requirements. For a detailed discussion of the methodology, readers are referred to \[ref2\]. For this residual-based formulation, in case of a linear operator $K$, it takes only one iteration to converge. For a large number of elements and nodes, among different steps of the finite element methodology, the most computationally demanding step is the solution of the linear system of equations. In an application where computational efficiency is critical, like real time simulations \[ref3\] and digital twins \[ref4\], it is imperative that this step be avoided. Techniques suitable for such applications, like model order reduction \[ref5, ref6\], construct a surrogate model of Eq. (4) to reduce this cost significantly. Techniques involving neural-networks can completely avoid this cost, but will require a significant amount of training and test data, which is typically generated by simulating the underlying finite element problem. In “Finite element method-enhanced neural network for forward problems” section, we discuss an algorithm that combines residual information from a numerical method to train a neural network for linear PDEs. In this case the residual $r(u^h)$ becomes
+
+$$
+r(u^h) = Ku^h - F
+$$
+
+FEM is widely used in various industries to simulate physical phenomena and optimize designs, significantly reducing production costs by allowing for virtual testing and refinement before physical prototypes are created. The method gained prominence in the 1960s and has since undergone significant advancements, driven by improvements in computer technology and numerical algorithms. Today, FEM is integral to fields such as aerospace, automotive, civil engineering, and biomedical engineering, offering highly accurate predictions and contributing to innovation and efficiency in product development.
+
+### Current Advancements and Challenges
+
+Despite its significant power and advantages, FEM's primary focus on mesh construction and solving numerous complex partial differential equations (PDEs) can lead to slow performance when dealing with highly intricate problems. This method demands substantial computational power, and each parameter change necessitates a complete re-execution, demonstrating limited flexibility in adapting to changes. Consequently, scientists are actively seeking to improve and potentially replace FEM with more efficient methods.
+
+Due to the challenges associated with traditional FEM, mesh-free methods have consistently garnered attention. These approaches aim to address FEM's limitations by offering greater flexibility, faster computations, and the ability to handle complex scenarios more efficiently. However, it is important to note that FEM remains comprehensive and applicable for a wide range of problems, including solid and fluid mechanics, among others. Alternative methods are often tailored to specific types of problems and applications, meaning that there is currently no complete replacement for FEM. Instead, these alternative methods are being developed and refined to provide better and more suitable solutions for specific issues​. for instance in @zhang2024state Mesh-free methods for crack problems have been reviewed.
+
+Among the proposed approaches, the Smoothed Particle Hydrodynamics (SPH) \[\] , the Element-Free Galerkin Method (EFGM) \[\] and the Material Point Method (MPM) \[\] have been notable efforts. SPH employs particles to simulate fluid elements and interactions, proving particularly effective for complex fluid dynamics problems. EFGM, on the other hand, utilizes nodes and shape functions to approximate solutions, providing significant flexibility and accuracy for intricate geometries and boundary conditions. Additionally, MPM represents materials as moving points through a computational grid, making it especially suitable for scenarios involving large deformations and complex material behaviors. These mesh-free approaches offer enhanced adaptability and computational efficiency, addressing some of the core limitations of FEM​​.
+
+In this thesis however, our focus on FEM is specifically related to structural analysis and deformation problems. Among the mesh-free methods introduced in this field, the EFGM and the MPM are particularly relevant. These methods provide promising alternatives to traditional FEM by enhancing computational efficiency and adaptability in solving mechanical and deformation-related problems​.
+
+## Replacing FEM with AI Approaches
+
+Similar to other fields, the application of AI in FEM has a relatively long history. While a comprehensive solution to completely replace FEM is yet to be found, AI's advancements in this area are promising.
+
+in @zhang2024state the Mesh-free methods for crack problems have been reviewed.
+
+with examples such as neural networks for stress analysis, which have been proposed for specific applications\[\].
+
+For deformation problems, solutions often involve simplifying the problem to 2D images and employing image processing techniques\[\].
+
+Advancements in replacing the Finite Element Method (FEM) are not confined to a few specific techniques. Instead, various solutions have been proposed depending on the nature of the problem, the type of data, and the complexities involved. These diverse approaches reflect the need for tailored solutions to effectively address the unique challenges presented by different FEM applications.
+
+Physics-Informed Neural Networks (PINNs) are another innovative approach, integrating physical laws into the learning process to solve PDEs. In the following sections, we will review some of the most significant works related to our problem:
+
+### Physics informed Neural Networks (PINN)
+
+Physics-Informed Neural Networks (PINNs) @raissi2019physics are a class of neural networks that integrate physical laws described by partial differential equations (PDEs) into the learning process. They leverage the universal approximation capability of neural networks to solve forward and inverse problems governed by PDEs. The core idea of PINNs is to minimize a loss function that includes both the data-driven error and the residuals of the PDEs, thereby ensuring that the learned solution satisfies the underlying physical laws.
+
+In the context of a PDE, such as $\mathcal{N}(u(x)) = 0$, where $\mathcal{N}$ is a differential operator and $u(x)$ is the solution, the loss function $\mathcal{L}$ for a PINN can be expressed as:
+
+$$
+\mathcal{L} = \mathcal{L}_{\text{data}} + \mathcal{L}_{\text{PDE}}
+$$
+
+Here, $\mathcal{L}_{\text{data}}$ represents the mean squared error (MSE) between the neural network's predictions $u_{\theta}(x)$ and the observed data points $u_{\text{obs}}(x)$:
+
+$$
+\mathcal{L}_{\text{data}} = \frac{1}{N} \sum_{i=1}^{N} \left( u_{\theta}(x_i) - u_{\text{obs}}(x_i) \right)^2
+$$
+
+The term $\mathcal{L}_{\text{PDE}}$ enforces the PDE constraints by computing the MSE of the residuals at collocation points $x_c$:
+
+$$
+\mathcal{L}_{\text{PDE}} = \frac{1}{M} \sum_{j=1}^{M} \left( \mathcal{N}(u_{\theta}(x_{c_j})) \right)^2
+$$
+
+By optimizing the combined loss $\mathcal{L}$, the neural network is trained to produce a solution that fits the observed data while also satisfying the physical constraints imposed by the PDE.
+
+PINNs have been successfully applied to various challenging problems, including fluid dynamics, structural mechanics, and electromagnetic simulations. Their ability to incorporate prior physical knowledge directly into the learning process makes them a powerful tool for modeling complex systems where data is scarce or noisy. Additionally, PINNs can be used for solving inverse problems, where the goal is to infer unknown parameters or functions within the PDEs, by including terms in the loss function that account for the discrepancies between the predicted and observed data, as well as the governing physical laws. This versatility highlights the potential of PINNs in enhancing the accuracy and robustness of simulations in scientific and engineering applications.
+
+### Image based fems ...
+
+Despite significant advancements in various fields, a comprehensive model specifically designed to address the problem of 3D shape deformation using AI has not yet been developed (as of the time of writing this thesis). Many existing methods are frequently confined to 2D spaces, with fewer efforts made to extend these solutions to 3D problems. In real-world applications, interacting with 3D data is preferable as it more closely resembles actual conditions, enhancing the realism and accuracy of simulations. Expanding AI applications to 3D FEM simulations can significantly improve their applicability and fidelity in real-world scenarios.
+
+On the other hand, various AI techniques for working with 3D data have been actively pursued in domains such as computer graphics, 3D reconstruction, 3D object classification etc. It is important to note that this is a multidisciplinary issue, requiring collaboration across different scientific fields. Interaction among specialists from various domains is crucial to finding a common ground and proposing more effective solutions. This interdisciplinary cooperation is essential for aligning different areas of expertise to develop more robust and effective methods for 3D shape deformation.
+
+Therefore, in this section, we will explore computer science methods that are similar to our problem and work with 3D data using AI tools. The work presented here is relatively specialized, and as of now, no existing AI method has been found that directly addresses our specific problem. However, we can expect to see an increase in intelligent models tackling this issue in the near future. The continued development of AI in this area holds great promise for improving the accuracy and efficiency of simulations involving 3D shape deformation.
+
+## Introduction to Deep Neural Networks
+
+Deep Neural Networks (DNN) represent a significant evolution in the field of artificial intelligence, particularly in machine learning and pattern recognition. Building on the foundation of traditional neural networks, DeepNNs consist of multiple layers of interconnected neurons, allowing them to model complex patterns and relationships in data more effectively than shallow networks. The advent of DeepNNs has revolutionized numerous fields, including computer vision, natural language processing, and reinforcement learning, marking a pivotal shift in the capabilities of AI systems.
+
+The concept of neural networks dates back to the mid-20th century, with the introduction of the perceptron by Frank Rosenblatt in 1958. However, the journey towards DeepNNs gained momentum only in the 1980s, with the development of the backpropagation algorithm, a critical breakthrough enabling the training of multi-layered networks. Backpropagation, introduced by Rumelhart, Hinton, and Williams in 1986, made it feasible to adjust the weights of neural networks through gradient descent, efficiently minimizing the error between predicted and actual outcomes. This algorithm remains at the heart of training deep networks, enabling them to learn complex functions from data.
+
+Despite these early advances, DeepNNs struggled to gain traction due to computational limitations and the challenge of vanishing gradients, a problem where gradients used to update the weights become increasingly small in deeper layers, hindering effective learning. This issue was addressed by the introduction of more advanced activation functions like ReLU (Rectified Linear Unit), which helped maintain more consistent gradients, and by innovations such as batch normalization and more sophisticated weight initialization techniques.
+
+Key Concepts and Advancements One of the core principles behind the success of DeepNNs is gradient descent, an optimization algorithm used to minimize the loss function. The loss function $L(\theta)$ quantifies the error in the network's predictions, where $\theta$ represents the network's parameters (weights and biases). Gradient descent iteratively adjusts $\theta$ in the direction opposite to the gradient of the loss function, formally expressed as:
+
+$$\theta_{t+1} = \theta_t - \eta \nabla_\theta L(\theta_t)$$
+
+where $\eta$ is the learning rate, and $\nabla_\theta L(\theta_t)$ is the gradient of the loss function with respect to the parameters. However, the success of gradient descent in deep networks relies heavily on effective weight initialization, appropriate activation functions, and strategies to mitigate overfitting and vanishing gradients. The introduction of ReLU activation functions, expressed as $f(x)=max(0,x)$, was instrumental in overcoming the vanishing gradient problem by ensuring that gradients remain significant in deeper layers, thus allowing for better learning and performance.
+
+Additionally, innovations like convolutional layers in CNNs, recurrent layers in RNNs, and attention mechanisms in transformers have expanded the applicability and power of DeepNNs. CNNs have revolutionized image processing, RNNs have enabled effective modeling of sequential data, and transformers have set new benchmarks in natural language processing.
+
+A crucial aspect of neural networks is the dataset. Typically, the model is trained on a large amount of training data, validated on a separate validation set, and then tested on unseen test data to evaluate its performance. The selection and preprocessing of data are of particular importance in this process. Neural networks often operate best when the data is scaled within a specific range, usually between 0 and 1. Therefore, considerable effort is made to ensure that the data is normalized to fall within this optimal range, which significantly contributes to the effectiveness of the model.
+
+The success of these architectures has been further amplified by large-scale datasets and the availability of massive computational resources, leading to groundbreaking achievements such as Google's AlphaGo, OpenAI's GPT models, and various state-of-the-art systems in image and speech recognition.
+
+## Multi-Layer Perceptron (MLP)
+
+MLP is a type of feedforward artificial neural network that consists of multiple layers of neurons, where each layer is fully connected to the next one. The basic unit of an MLP is the perceptron, which computes a weighted sum of its input features and passes the result through an activation function. MLPs typically consist of an input layer, one or more hidden layers, and an output layer. The input layer receives the initial data, the hidden layers process the data through multiple transformations, and the output layer produces the final prediction or classification. MLPs are capable of approximating complex functions and are commonly used in tasks such as classification, regression, and pattern recognition.
+
+The mathematical operation of a single perceptron in an MLP can be expressed as: $$
+z^{(l)} = \mathbf{W}^{(l)} \mathbf{a}^{(l-1)} + \mathbf{b}^{(l)}
+$$
+
+Here, $\mathbf{W}^{(l)}$ represents the weight matrix, $\mathbf{a}^{(l-1)}$ is the activation from the previous layer, and $\mathbf{b}^{(l)}$ is the bias vector. The activation for the current layer is then obtained by applying an activation function $\sigma$ to $z^{(l)}$:
+
+$$
+\mathbf{a}^{(l)} = \sigma(z^{(l)})
+$$
+
+## Autoencoders
+
+An autoencoder is a type of neural network designed to learn a compressed, efficient representation of input data. It consists of two main components: an encoder and a decoder. The encoder compresses the input data into a lower-dimensional representation, often referred to as the latent space or bottleneck. The decoder then attempts to reconstruct the original input from this compressed representation. The goal is to minimize the difference between the input and the reconstructed output.
+
+Mathematically, the process can be represented as: $$
+\mathbf{z} = f_\theta(\mathbf{x})
+$$
+
+$$
+\hat{\mathbf{x}} = g_\phi(\mathbf{z})
+$$
+
+Here, $\mathbf{z}$ is the latent representation of the input $\mathbf{x}$, and $\hat{\mathbf{x}}$ is the reconstructed output. The objective of the autoencoder is to minimize the reconstruction loss, commonly measured as the mean squared error (MSE):
+
+$$ L(\mathbf{x}, \hat{\mathbf{x}}) = \| \mathbf{x} - \hat{\mathbf{x}} \|^2_2 $$
+
+Autoencoders are particularly useful in areas such as dimensionality reduction and reconstruction, where they compress high-dimensional data into a lower-dimensional latent space and then accurately reconstruct the original data. They also excel in denoising by removing noise from corrupted data, and in anomaly detection by identifying outliers based on reconstruction errors. Additionally, autoencoders are valuable in generative modeling, contributing to the creation of new, similar data samples, which is especially beneficial in image synthesis and data augmentation.
+
+## 3D Deep Learning
+
+@ahmed2018survey Three-dimensional (3D) data processing using deep learning has become increasingly important in fields such as computer vision, robotics, and virtual reality. The way 3D data is represented plays a critical role in the design of models, the training process, and the final output. Depending on how the data is structured and represented, 3D deep learning can be categorized into several approaches. The most common representations include point clouds, meshes, and multi-view images, which are considered explicit forms of 3D data. Each of these representations has its unique challenges and benefits, influencing the choice of network architecture and the methods used for training.
+
+In addition to explicit representations, implicit representations have gained significant attention in recent years. Unlike explicit forms, where the 3D data is directly stored and processed, implicit representations model the 3D structure in a more abstract way, such as through occupancy fields or signed distance functions. These newer approaches allow for more flexible and continuous representation of 3D shapes, often leading to better generalization and smoother reconstructions. Due to their efficiency and ability to handle complex geometries, implicit representations are becoming increasingly popular in state-of-the-art 3D deep learning applications.
+
+### NN and Explicit representations : Point Clouds
+
+A point cloud is a collection of data points defined in a three-dimensional coordinate system. Each point represents a specific location in 3D space, often capturing the surface of an object or environment. Point clouds are widely used in various applications, including 3D modeling, computer graphics, and autonomous driving, as they offer a straightforward and efficient way to represent 3D shapes. Due to their simplicity and lightweight nature, point clouds are particularly well-suited for neural network processing, making them a popular choice for tasks such as classification and segmentation.
+
+Point clouds have strong compatibility with neural networks, especially those designed for 3D data. Unlike other data types, such as meshes or volumetric grids, point clouds do not require complex preprocessing and can be directly fed into neural networks like PointNet or PointNet++. These networks are specifically designed to handle the unordered and irregular nature of point clouds, enabling effective learning and accurate predictions. However, a significant limitation of point clouds is their lack of detailed surface information. While they provide a basic representation of shape, they do not inherently capture the intricate surface geometry of objects, which can be a drawback in applications where precise surface details are critical. Despite this, the simplicity and efficiency of point clouds make them a powerful tool in 3D deep learning.
+
+#### PointNet
+
+PointNet is a pioneering neural network architecture specifically designed for processing point cloud data. Unlike traditional methods that rely on structured data representations like grids or meshes, PointNet directly consumes raw point clouds, making it highly efficient and versatile for tasks such as 3D object classification, segmentation, and scene understanding. The core innovation of PointNet is its use of a symmetric function, such as max-pooling, applied across all points to achieve permutation invariance, ensuring that the network's output remains consistent regardless of the order in which the points are presented. This design enables PointNet to effectively capture global features of the point cloud while also incorporating local point features through a series of multi-layer perceptron (MLP) layers.
+
+However, despite its innovative approach, PointNet has certain limitations. One of the key drawbacks is its inability to capture fine-grained local structures and relationships between points, as it primarily focuses on global feature aggregation. This makes it less suitable for representing 3D shape deformations, where understanding local geometric variations is crucial. Additionally, PointNet's reliance on a global max-pooling operation can lead to the loss of important spatial information, which is essential for tasks that require detailed shape analysis. As a result, while PointNet is highly effective for tasks like classification and basic segmentation, it may not be the best choice for applications that require a nuanced understanding of 3D shape deformations or other complex geometric transformations.
+
+#### PointNet++
+
+PointNet++ is an extension of the original PointNet architecture designed to address some of its limitations, particularly in capturing local geometric details. While PointNet excels at processing global features of point clouds, it struggles with recognizing fine-grained structures and the spatial relationships between nearby points. PointNet++ enhances this capability by introducing a hierarchical structure that processes the point cloud in a nested manner, similar to how CNNs work on images by capturing local features at various scales. In PointNet++, the point cloud is divided into smaller neighborhoods or regions, and the PointNet architecture is applied recursively within these regions to learn local features. These local features are then aggregated hierarchically to form a more comprehensive understanding of the overall shape.
+
+Despite these improvements, PointNet++ still faces challenges when dealing with 3D shape deformations. Although it can capture local features more effectively than its predecessor, the architecture is primarily designed for static or rigid objects and is less suited for tasks that require understanding complex deformations or non-rigid transformations. The hierarchical structure, while powerful, does not inherently model the continuous and flexible nature of deformations, making it less ideal for applications where capturing subtle changes in shape is crucial. Thus, while PointNet++ represents a significant advancement over the original PointNet, it is still not recommended for scenarios that involve significant 3D shape deformations.
+
+### NN and Explicit representations : Mesh
+
+Meshes are one of the most widely used explicit representations in 3D deep learning, particularly in fields like computer graphics, medical imaging, and 3D modeling. A mesh is essentially a specific form of graph, composed of vertices (points in 3D space) and edges (connections between vertices), which together form faces that define the surface of a 3D object. This representation is highly expressive, capturing intricate details of an object's surface geometry and topology. Unlike more regular data structures such as images or point clouds, meshes have a non-Euclidean structure, presenting unique challenges for neural networks that need to process this type of data. To address these challenges, specialized neural network architectures like graph neural networks (GNNs) or convolutional neural networks adapted for non-Euclidean spaces (e.g., mesh convolutional networks) are often used. These networks are designed to leverage the connectivity information inherent in meshes, allowing them to learn and extract meaningful features directly from the mesh's topology. Therefore, these GNNs are highly effective for data with a graph-like structure, where connections between verices are crucial, such as social network or molecular graphs, where understanding complex relational patterns is crucial. However, when the mesh geometry and the positions of the vertices themselves become important, these networks face significant challenges. Examples of networks that have addressed this issue in geometric deep learning for classification, under specific constraints, include MeshCNN, SplineCNN, and CoMA @ranjan2018generating.
+
+#### Convoutional Mesh AutoEncoder (CoMA)
+
+The Convolutional Mesh AutoEncoder (CoMA), introduced in 2017, is a neural network architecture specifically designed to process 3D mesh data.
+
+Unlike traditional autoencoders, which are inherently designed for structured, grid-like data such as images, CoMA is specifically engineered to tackle the complexities of irregular 3D mesh structures. Traditional convolutional neural networks (CNNs) excel in processing data arranged in regular grids, where each pixel or voxel is neatly aligned with its neighbors. However, 3D meshes are fundamentally different—they consist of vertices connected by edges forming irregular polygons, typically triangles, that define the surface of a shape. These irregularities present significant challenges for standard CNNs, which rely on the spatial consistency of grid data to apply convolutional operations effectively.
+
+CoMA overcomes these challenges by extending convolutional operations from regular grids to graph structures, where the mesh vertices and edges form a graph. This adaptation is made possible through spectral graph convolutional layers, which operate in the frequency domain, allowing the network to process the mesh’s geometry in a way that respects its inherent irregularity. These layers perform convolutions not in the traditional spatial sense, but by filtering the mesh’s geometric features across its graph-based structure. This allows CoMA to capture both local and global geometric information, which is crucial for accurately representing complex 3D shapes.
+
+The architecture of CoMA is built around a symmetric encoder-decoder design, where both the encoder and decoder consist of four layers. The encoder’s role is to compress the high-dimensional mesh data into a lower-dimensional latent space. This compression is achieved through the spectral graph convolutional layers, which progressively reduce the resolution of the mesh while preserving its most significant geometric features. The latent space effectively captures the high-level, abstract representation of the 3D shape, distilling its most important characteristics into a compact form.
+
+Once the mesh data is compressed into this latent space, the decoder takes over, reconstructing the original high-resolution mesh from the compact representation. The decoder mirrors the encoder’s structure, using upsampling operations and inverse convolutions to progressively restore the mesh’s resolution. This reconstruction process allows CoMA to generate a detailed and accurate representation of the original 3D shape, ensuring that essential geometric properties are preserved throughout the process. The combination of these advanced techniques enables CoMA to learn and manipulate complex 3D shapes efficiently, making it a powerful tool for tasks like shape reconstruction, deformation transfer, and facial expression synthesis.
+
+A key innovation of CoMA is its ability to handle the irregular topology of meshes through spectral graph convolutions, which operate in the frequency domain. By leveraging Chebyshev polynomials and fast localized convolutions, the model efficiently processes mesh data. However, it is important to note that all mesh samples in the dataset must share the same topology, and a model trained on one dataset is not easily extendable to others. Additionally, the input mesh must exhibit properties such as regularity, uniform connectivity, and also a consistent hierarchical structure to support both downsampling and upsampling operations. Without these properties, operations like pooling and unpooling can become problematic, potentially necessitating remeshing to create a dataset suitable for CoMA. Furthermore, the network’s first - and last - layers must have a size of 3 times the number of vertices to represent XYZ positions, which can result in a large model when dealing with high-resolution meshes. Therefore, while CoMA is powerful for tasks like 3D shape reconstruction, facial expression synthesis, and deformation transfer, it does have specific requirements and limitations regarding the structure and properties of the input meshes.
+
+#### SplineCNN
+
+@fey2018splinecnn SplineCNN is a type of convolutional neural network designed to operate on non-Euclidean domains, such as graphs and meshes, where data is irregular and connectivity information is crucial. Unlike traditional CNNs that use fixed rectangular kernels, SplineCNN employs learnable B-spline kernels that can adapt to the underlying structure of the data, allowing the network to perform convolutions directly on the graph or mesh. This flexibility enables SplineCNN to effectively capture both the local geometric structure and the connectivity patterns, making it well-suited for tasks like 3D shape analysis and graph-based classification.
+
+![](img/Chp1/splineCNN.png){fig-align="center" width="50%"}
+
+SplineCNN has demonstrated its effectiveness by improving state-of-the-art results in several benchmark tasks, including image graph classification, graph node classification, and shape correspondence on meshes. For the task of shape correspondence, SplineCNN was validated on a collection of 3D meshes, solving the challenge of matching each node of a given shape to the corresponding node of a reference shape. However, the dataset used in this experiment had a significant limitation: all meshes shared the same topology, requiring that the mesh sizes and node orders remain consistent across the entire dataset, which is a considerable constraint.
+
+#### MeshCNN
+
+@hanocka2019meshcnn
+
+MeshCNN is a specialized neural network architecture designed to process 3D mesh data by adapting convolutional operations to the irregular, non-Euclidean structure of meshes. Unlike traditional CNNs that operate on grid-like data, MeshCNN applies convolutions directly on the edges of a mesh, enabling the network to capture the geometric and topological features inherent in 3D shapes. The architecture employs edge-based convolutions and pooling operations to reduce the mesh's complexity while preserving its essential properties, making it particularly effective for tasks such as 3D shape classification and segmentation. This approach is well-suited for scenarios where understanding the detailed geometry and topology of 3D objects is crucial, such as distinguishing between different types of 3D models or segmenting parts of a 3D object.
+
+However, MeshCNN also introduces certain complexities and limitations. The input dimensionality is defined by the number of features per edge multiplied by the total number of edges, which can lead to increased computational demands, particularly for large meshes. Additionally, the architecture requires a consistent and well-defined mesh structure, often necessitating preprocessing steps like remeshing or simplification to ensure compatibility. This dependence on specific mesh topologies can limit the network's generalization to different types of meshes, and the computational load may challenge scalability in scenarios with varying mesh structures or limited resources.
+
+#### MeshNet
+
+@feng2019meshnet
+
+Designed for tasks like 3D shape classification and retrieval, MeshNet effectively addresses the challenges posed by the complexity and irregularity of mesh data. The architecture incorporates face-unit and feature-splitting techniques, along with specialized blocks for capturing spatial and structural features of the mesh, allowing the network to learn and aggregate information from mesh data efficiently. This makes MeshNet particularly effective for tasks such as 3D shape classification and retrieval.
+
+However, MeshNet also has its drawbacks and limitations. One significant challenge is the need for consistent and high-quality mesh data, as the network's performance heavily depends on the structure and regularity of the input meshes. Additionally, processing complex or high-resolution meshes can be computationally expensive, potentially limiting the scalability of the model in larger or more detailed datasets. Despite these challenges, MeshNet has shown promising results in applications requiring precise 3D shape analysis, such as in the classification and retrieval of 3D models, demonstrating its potential in the field of computer vision and graphics.
+
+### NN and Multi-view 2D images
+
+Multi-view approaches combined with neural networks for 3D reconstruction involve capturing multiple images or views of an object from different angles and using neural network models to integrate this information into a detailed 3D model. These methods leverage the complementary information provided by different views about an object’s shape, texture, and depth. By aligning and combining these views, neural networks can infer the 3D structure of the object with greater accuracy and detail. Examples include multi-view learning approaches, photogrammetry enhanced by neural networks, and advanced methods like Neural Radiance Fields (NeRFs).
+
+Despite their effectiveness, multi-view approaches that incorporate neural networks also present certain challenges. Ensuring precise alignment and calibration between views remains crucial, as even minor errors can result in significant inaccuracies in the 3D reconstruction. These methods can be computationally demanding, especially when processing high-resolution images or complex scenes, requiring substantial computational resources. Additionally, multi-view neural network techniques may struggle with objects that have complex geometries or surfaces that are difficult to capture from certain angles, leading to incomplete or less detailed reconstructions. Consequently, while these multi-view neural network approaches are powerful tools for 3D reconstruction, they may not be suitable for all scenarios, particularly those involving dynamic changes or where real-time processing is required.
+
+#### Multi-view learning
+
+@zhao2017multi Multi-view learning is a machine learning approach that uses multiple representations or views of the same data to improve model performance by capturing richer and more diverse features than a single view could offer. This method is particularly effective in scenarios like image recognition, text analysis, and bioinformatics, where data is naturally multi-modal. However, multi-view learning faces challenges such as integrating heterogeneous views, managing computational complexity, and dealing with incomplete data. With the emergence of newer techniques like NeRF (Neural Radiance Fields) and photogrammetry, which utilize more advanced methods for 3D reconstruction, the prominence of multi-view learning approaches has gradually diminished. These newer methods are capable of extracting and integrating information from multiple views with greater accuracy and efficiency, making them more suitable replacements for traditional multi-view learning in many applications.
+
+#### Photogrammetry
+
+Enhanced photogrammetry with neural networks builds on the traditional photogrammetry @kraus2011photogrammetry technique, which reconstructs 3D models from a series of 2D images taken from different angles. In traditional photogrammetry, geometric principles such as triangulation are used to align and integrate these images, producing a detailed 3D model. However, this process can be limited by the quality of feature matching, image alignment, and the ability to handle complex or noisy datasets. Neural networks have been introduced to overcome some of these limitations by improving various stages of the photogrammetry pipeline, such as feature detection, depth estimation, and image matching.
+
+Neural networks enhance photogrammetry by making the reconstruction process more robust and accurate. For example, deep learning models can better handle variations in lighting, texture, and occlusion, which often pose challenges in traditional methods. They can also improve the efficiency of processing large datasets by automating parts of the reconstruction process that would otherwise require manual intervention or complex algorithms. As a result, neural network-enhanced photogrammetry can produce more precise 3D models, especially in challenging scenarios where traditional methods might struggle. This makes it a valuable tool in fields such as archaeology, architecture, and geospatial analysis, where high-quality 3D reconstructions are critical. However, these techniques are primarily suited for environmental reconstructions and are not as effective for detailed reconstruction of individual 3D objects.
+
+#### Neural Radiance Fields (NeRFs)
+
+NeRFs are a cutting-edge approach to 3D scene representation and reconstruction using neural networks. Introduced in 2020, NeRFs model the volumetric scene by encoding the radiance (color) and density at each point in a 3D space, which is then used to render images from any viewpoint. The core idea is to use a neural network to learn a continuous volumetric scene function that takes as input a 3D coordinate (along with a viewing direction) and outputs the color and density at that point. This allows NeRFs to synthesize highly realistic images of a scene from novel viewpoints, even when only a sparse set of 2D images are provided during training.
+
+NeRFs have demonstrated remarkable results in tasks like view synthesis, where they can generate photorealistic images of complex scenes with fine details, including soft shadows and reflections. However, NeRFs also have some limitations. Training a NeRF model can be computationally intensive, often requiring powerful GPUs and significant processing time, as the network must learn the entire scene's radiance field from the input images. Additionally, while NeRFs excel at capturing static scenes, they struggle with dynamic scenes or objects with complex deformations, making them less suitable for real-time applications or scenarios involving moving subjects. Despite these challenges, NeRFs represent a significant advancement in the field of 3D reconstruction and have opened up new possibilities for high-quality, neural-based rendering in various applications, from virtual reality to filmmaking.
+
+## NN and Imlicit representations
+
+Implicit representations describe 3D shapes or objects using mathematical functions that define the shape implicitly, rather than explicitly storing surface geometry like vertices, edges, or faces. Instead of representing a shape as a collection of discrete elements, implicit representations use continuous functions to define the geometry. Neural networks are particularly well-suited for modeling these representations as they function effectively as estimators of complex, non-linear functions. A trained neural network can embed the shape information within its structure, allowing it to learn functions that represent shape details implicitly without the need for explicit geometric data. This approach results in more compact and flexible structures capable of accurately modeling intricate geometries, offering a smoother and more continuous alternative to traditional explicit representations. Two of the most prominent and widely adopted methods in recent years are signed distance functions (SDFs) and occupancy fields, which have gained significant attention for their effectiveness in representing 3D shapes implicitly.
+
+#### Occupancy Fields
+
+Occupancy fields are a mathematical framework used to implicitly represent 3D shapes by defining a continuous function $f(\mathbf{x})$ that maps points $\mathbf{x} = (x, y, z)$ in a three-dimensional space to a scalar value, typically within the range \[0, 1\]. This scalar value indicates the probability or likelihood that a given point lies inside the shape or object. Specifically, points with values close to 1 are considered to be within the object's volume, while those with values near 0 are outside. Unlike explicit representations that store geometry using discrete elements like vertices, edges, and faces, occupancy fields offer a more continuous and fluid description of 3D geometry. This allows for the representation of complex shapes without the need for dense, memory-intensive data structures, making them particularly effective for capturing intricate details in a more compact form.
+
+In scientific and computational applications, occupancy fields are often employed in conjunction with neural networks, which excel at learning and approximating continuous functions from data. A neural network can be trained to approximate the occupancy function $f(\mathbf{x})$ for a given set of shapes, effectively encoding the geometry of these shapes within its learned parameters. Once trained, the network can quickly evaluate the occupancy of any point in space, enabling rapid and accurate reconstructions of 3D objects. This method provides significant advantages over traditional explicit representations, particularly in terms of memory efficiency and the ability to smoothly interpolate and generate new shapes. The continuous nature of occupancy fields also lends itself well to tasks such as 3D object reconstruction, shape completion, and scene understanding, where capturing the fine details and complex structures of objects is crucial.
+
+#### DeepSDF
+
+@park2019deepsdf DeepSDF is a powerful technique that leverages neural networks to learn implicit representations of 3D shapes through Signed Distance Functions (SDFs). The core idea is to train a deep neural network to approximate the SDF of a target shape, which describes the distance from any point in space to the surface of the shape. The SDF function is signed, meaning that it returns positive values for points outside the shape, negative values for points inside, and zero at the surface.
+
+In the DeepSDF approach, the network is trained on a dataset $X$ composed of pairs of 3D points $x$ and their corresponding SDF values $s$. Mathematically, this can be represented as:
+
+$$
+X := \{(x, s) : \text{SDF}(x) = s\}
+$$
+
+The goal is to train the parameters $\theta$ of a multi-layer fully-connected neural network $f_\theta$ so that it becomes a good approximator of the SDF function across the target domain $\Omega$. The training process involves minimizing the difference between the network's output and the actual SDF values for the sampled points. This relationship is expressed as:
+
+$$
+f_\theta(x) \approx \text{SDF}(x), \forall x \in \Omega
+$$
+
+Once trained, the neural network can efficiently predict the SDF for any point in space, allowing it to reconstruct or generate highly detailed 3D shapes based on the learned implicit representation. This method is particularly useful for tasks requiring smooth and continuous shape representations, such as 3D modeling, shape interpolation, and generation.
+
+### Converting implicit fields to 3D Meshes
+
+In the end, implicit fields need to be converted into meshes because this transformation is essential for visualizing, simulating, and processing the shape in a tangible, usable form. Converting implicit fields into 3D meshes involves extracting a clear surface representation from the volumetric data. Methods like the Marching Cubes algorithm are widely used for this purpose, where the 3D space is divided into small cubes, and the surface is triangulated based on the values at the corners of these cubes. Other techniques, such as Dual Contouring or surface nets, offer alternatives for surface extraction, sometimes providing better handling of sharp features or producing more efficient meshes. These methods are essential in transforming the implicit definition of shapes into explicit 3D models for visualization, simulation, and further processing.
+
+#### Marching Cubes
+
+The Marching Cubes algorithm is a widely used method for converting implicit fields, such as Signed Distance Functions (SDF) or occupancy fields, into explicit 3D meshes. These implicit fields define a shape indirectly by specifying whether a point in space is inside or outside the shape (occupancy fields) or by providing the shortest distance from any point to the surface of the shape (SDF). The challenge is to extract a clear, explicit surface from this data, which is where Marching Cubes comes in.
+
+The algorithm works by dividing the 3D space into a grid of small cubes, where each corner of a cube corresponds to a sample point in the implicit field. By evaluating the field at each corner, the algorithm determines whether that corner is inside or outside the shape. Based on the combination of these inside/outside states at the eight corners of a cube, the algorithm references a precomputed lookup table to decide how to triangulate the surface that passes through the cube. The result is a collection of triangles that approximate the surface of the shape, effectively converting the implicit field into an explicit mesh.
+
+Marching Cubes is particularly popular due to its efficiency and simplicity, as well as its ability to handle complex shapes and produce smooth surfaces. However, while it is effective, it can sometimes produce meshes with a high number of triangles, especially in areas of high curvature, which may require further optimization or simplification depending on the application. Nonetheless, it remains a fundamental tool in computer graphics, medical imaging, and 3D modeling for converting implicit representations into usable 3D models.
+
+#### Dual Contouring
+
+Dual Contouring is an algorithm used for extracting a surface mesh from an implicit field, such as a Signed Distance Function (SDF) or an occupancy field. Unlike the Marching Cubes algorithm, which operates directly on the corners of grid cells to produce triangles, Dual Contouring focuses on the edges of the grid cells and generates vertices directly on the surface of the shape being represented. This approach often results in better preservation of sharp features like edges and corners, which can be challenging for Marching Cubes to capture accurately.
+
+The algorithm works by first identifying edges of grid cells where the implicit field changes sign, indicating that the surface passes through that edge. For each such edge, a vertex is placed at the point on the edge that is closest to the actual surface, usually computed by minimizing a quadric error function derived from the field's gradient. The vertices created this way are then connected to form polygons, typically quads, that approximate the surface.
+
+One of the key advantages of Dual Contouring is its ability to generate meshes that accurately capture sharp features without the need for excessive subdivision, leading to more efficient meshes with fewer polygons. This makes it particularly useful in applications where precise geometry is important, such as in computer-aided design (CAD) and high-quality 3D modeling. Additionally, Dual Contouring can be extended to handle adaptive octrees, allowing it to efficiently manage complex, highly detailed surfaces.
+
+#### Surface Nets
+
+Surface Nets is another algorithm used for extracting a surface mesh from an implicit field. The method can be seen as a middle ground between algorithms like Marching Cubes and Dual Contouring, aiming to create a more straightforward, yet effective, way of generating a 3D mesh that captures the surface of a shape.
+
+In Surface Nets, the 3D space is divided into a grid, similar to Marching Cubes. However, instead of focusing on the grid cell corners or edges, the algorithm places a single vertex within each grid cell that contains part of the surface (where the implicit function changes sign). The position of this vertex is determined by averaging the positions where the surface intersects the edges of the grid cell, effectively creating a "net" of vertices that approximates the surface.
+
+Once these vertices are placed, they are connected to form a mesh of quads or triangles, representing the surface of the shape. Surface Nets have the advantage of producing smoother surfaces with fewer vertices compared to Marching Cubes, especially in areas where the surface is relatively flat. Additionally, because it doesn't require complex computations to preserve sharp features, Surface Nets is simpler and faster than methods like Dual Contouring.
+
+However, Surface Nets might not capture sharp features as accurately as Dual Contouring, making it more suitable for applications where smooth surfaces are more critical than precise feature preservation. Its simplicity and efficiency make it a good choice for applications like real-time rendering or scenarios where computational resources are limited.

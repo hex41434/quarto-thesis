@@ -6,7 +6,7 @@ In the past, problem-solving involved identifying the issue and explicitly progr
 
 The emergence of AI, however, has revolutionized this approach. Instead of explicitly programming each step, we now provide the system with vast amounts of data, allowing it to "learn" and adjust itself to achieve the desired results. This learning process enables AI to tackle problems that were previously unsolvable using classical methods. By training models with large datasets, AI systems develop the capability to make predictions, recognize patterns, and generate insights without human intervention in the learning process.
 
-This shift from explicit programming to machine learning opens up possibilities for addressing complex problems across diverse domains. The challenge now lies in selecting the appropriate type of learning—supervised, unsupervised, or reinforcement learning—based on the nature of the problem and the available data. Understanding the strengths and limitations of each learning type is essential for effectively harnessing AI to solve real-world problems.From art and entertainment to industry, manufacturing, and healthcare, AI's transformative impact is evident. These developments underscore the necessity for individuals and organizations to embrace AI, leveraging its potential to drive innovation, efficiency, and improvements in various domains. As AI continues to evolve, its integration into diverse fields becomes increasingly imperative, highlighting the importance of understanding and utilizing AI to remain competitive and progressive.
+This shift from explicit programming to machine learning opens up possibilities for addressing complex problems across diverse domains. The challenge now lies in selecting the appropriate type of learning—supervised, unsupervised, or reinforcement learning—based on the nature of the problem and the available data. Understanding the strengths and limitations of each learning type is essential for effectively harnessing AI to solve real-world problems. From art and entertainment to industry, manufacturing, and healthcare, AI's transformative impact is evident. These developments highlight the need for individuals and organizations to embrace AI, as leveraging its potential can drive innovation, efficiency, and improvements across various domains. As AI continues to evolve, integrating it into diverse fields becomes increasingly crucial. Therefore, understanding and utilizing AI is essential to remain competitive and progressive.
 
 ## Problem Statement
 
@@ -14,12 +14,16 @@ This shift from explicit programming to machine learning opens up possibilities 
 
 Title: Machine Learning for the Prediction of Process Parameters and Component Quality in Automotive Body Production (ML\@Karoprod)
 
-The goal of the project from the perspective of machine learning is to develop predictive models that enable the prediction of the shape of a metal plate after a series of operations. currently : by FEM experts
+The goal of the project from a machine learning perspective is to optimize the process parameters of a product chain to deform a metal plate through a series of operations. Typically, an expert runs FEM simulations, adjusts the parameters, and evaluates the results to achieve the desired shape. This iterative process, which takes about 20 minutes per cycle, continues until the desired accuracy is achieved, with the expert manually applying the necessary changes and running subsequent simulations.
 
-The simulated deep drawing data consists of 880 valid experiments characterized by a series of process parameters: blank holder force, insertion position, material ID, punch ID, etc. In collaboration with our partners, we have identified the relevant set of features that are necessary and sufficient to fully determine the effects of a simulation, and we have also examined their influence using feature importance algorithms.
+![caption](img/Chp1/karo_process.png){#fig-karo-proc width="50%"}
+
+The process begins with deep drawing, a sheet metal forming technique where a metal blank is radially drawn into a forming die by a punch, with the goal of producing a wrinkle-free and crack-free product. Our simulated deep drawing data consists of a number of valid experiments, each characterized by various process parameters such as blank holder force, insertion position, material ID, and punch ID. In collaboration with our partners, we have identified the relevant set of features that are necessary and sufficient to fully determine the effects of a simulation.
+
+![caption](img/Chp1/karoprod.png){#fig-karo-proc2 width="50%"}
 
 |                                                            |         |         |
-|---------------------------------------|-----------------|-----------------|
+|----------------------------------|-------------------|-------------------|
 | Input parameters                                           | From    | to      |
 | die diameter                                               | 7.5mm   | 12.5mm  |
 | die depth in relation to total sheet thickness             | 0.2     | 0.6     |
@@ -33,6 +37,26 @@ The simulated deep drawing data consists of 880 valid experiments characterized 
 | thickness upper sheet in relation to total sheet thickness | 0.2     | 0.8     |
 | bottom thickness                                           | 0.589mm | 5.035mm |
 
-![The reference mesh for extracting face centers (Drawing depth Zt=70).](img/Chp1/banana_1.png){fig-align="left" width="40%"}
+The project partner generated approximately 1000 simulation files in mesh format by varying process parameters. After data cleaning, about 880 of these files were usable. The meshes had three different geometries (with three different depths: 30, 50, and 70), and parameters such as force and material varied, resulting in different final mesh outcomes. The ultimate goal in this section was to train a neural network to predict the dependency between changes in input parameters and the generated mesh. With sufficient training, the model would be able to accurately predict the shape of the final mesh even with new inputs that were not seen during training. This allows the specialist to quickly and accurately observe the final simulation results by manipulating parameters, in a much shorter time compared to traditional finite element methods.
+
+![The reference mesh for extracting face centers (Drawing depth Zt=70).](img/Chp1/banana_1.png){fig-align="center" width="40%"}
 
 ![The same mesh in a closer view](img/Chp1/banana_zoom.png){fig-align="left" width="40%"}
+
+![caption](img/Chp1/ban_sen1.png){width="50%"}
+
+![caption](img/Chp1/ban_sen_2.png){#fig-karo-proc-2 width="50%"}
+
+## Research Questions
+
+-   replacing mesh processing with implicit representations to have a continuous representation of models
+
+-   continuous fields
+
+-   infinite resolution
+
+-   we need to deal with 3D data and NNs , so we need to find the best representation to keep the net size as small as possible even for more complicated geometries, good accuracy and most importantly be able to work with dynamics of a 3d shape
+
+-   reduce the time of simulations
+
+-   provide accurate set of process parameters

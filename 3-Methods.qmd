@@ -2,39 +2,55 @@
 
 ## Dataset
 
-creating datasets.
+To train a neural network effectively, the first essential component is a dataset. A dataset provides the necessary examples for the network to learn patterns and make accurate predictions. In the context of 3D shape deformation and FEM simulations, having a comprehensive and high-quality dataset is crucial for the network to understand the complex relationships involved in deformation processes.
+
+Unfortunately, there are no public datasets specifically for 3D deformation available. Additionally, our project partner had a limited number of mesh simulations, which required significant time to generate. Consequently, I needed to create my own dataset to test and train my models. This would allow me to proceed with the project and later apply the developed models to the partner's data.
+
+When searching for deformation and FEM examples, one commonly encountered scenario is a beam fixed at one end, undergoing bending and deformation when a force is applied.
+
+![Beam Structure from Ansys Website](/img/Chp1/Ansys_beam.png){#fig-fem-ansys width="50%"}
+
+This classic example inspired my dataset design. I modeled a slender, rectangular cuboid beam, fixed at both ends, with a point force applied from various directions to induce deformation.
+
+![Dataset samples - first version](/img/Chp1/deformation_dataset.png){#fig-fem-ds1 width="50%"}
+
+The resulting dataset consisted of approximately 6300 mesh simulations, capturing the deformations caused by different force vectors at various points on top or bottom surface. This extensive dataset was suitable for training the neural network. I used FreeCAD software for this purpose, with detailed steps and methodologies described in section -XYZ- of this thesis.
+
+By generating this dataset, I ensured that my models had sufficient data to learn from, allowing for robust training and validation. This foundation enabled me to develop and refine the models before applying them to the partner's specific data, ensuring a smooth transition and effective implementation of AI techniques for 3D shape deformation.
+
+FreeCAD is a general-purpose parametric 3D computer-aided design modeler and a building information modeling software application with finite element method support. I used FreeCAD for several reasons: it is open-source, supports Python scripting, offers an easy setup for FEM, and has a rich forum and community support.
+
+To perform FEM simulations in FreeCAD, I followed these steps:
+
+Geometry Definition: Create the 3D model of the beam. Fixed Constraints: Define the fixed points where the beam is held. Force Constraints: Apply forces at specific points and directions on the beam. (this should change during the data generation loop) Add Material: Assign material properties to the beam. Create FEM Mesh: Generate a triangular mesh for the model. Solving Equations: Use CalculiX to solve the FEM equations and obtain the deformation results.
 
 ### FCAD data version 1 (first beam)
 
-6228 deformed shapes
+The output of FEM is typically a deformed mesh, which is a structure used to represent 3D data. A mesh is a special type of graph characterized by its vertices, edges, and faces, making it an excellent and popular data structure for representing 3D data with various complexities and curvatures, especially useful for depicting deformations.
 
-beam: fixed on both heads
-
-using FreeCAD
-
-FEM steps: constraints , material, triangular mesh , num of vertices
+The output from FreeCAD was a deformed mesh where only the vertex positions differed from the initial mesh. The generated meshes all have the same topology, meaning they have the same number of vertices, and the neighborhood of each vertex remains consistent across all meshes. This consistency in topology ensures that the dataset is suitable for training neural networks, as the structural integrity of the meshes is maintained throughout the simulations. However, as the complexity of the mesh increases, its size also grows, which can make rendering and processing somewhat slower. This trade-off between detail and computational efficiency is a key consideration in the use of meshes for 3D data representation.
 
 ### version 2 (press on top)
 
+To display multistep deformation, I decided to generate a new dataset with different conditions. I considered a cube with a larger surface area and shorter height, fixing it from the bottom. Random force vectors were applied to the surface and perpendicular to it at various points with different magnitudes. The deformation results were recorded for each step. Since these forces were applied sequentially to the object, it was necessary to record the name of each mesh and the state before and after the force application, along with the force specifications, in a separate table. This was done using a pandas DataFrame to facilitate easier access to the data files.
+
 ### 2D images (kriging)
 
-### SDF datasets ...
+### SDF datasets
 
 ## Single Step Deformation
 
-Single-step deformation involves predicting the reshaping of an object when a force vector is applied to it at a specific point.
-
-------------------------------------------------------------------------
+Single-step deformation (SSD) involves predicting the reshaping of an object when a force vector is applied to it at a specific point.
 
 In DeepSDF paper, it was demonstrated that a neural network is capable of encoding a 3D object (and a series of 3D objects). In this scenario, the neural network acts as a signed distance function (SDF), where, after training, the network can be queried to determine the distance of any arbitrary point from the surface. By querying the network for a sufficient number of points, we can generate a point cloud, where the distances of these points from the surface are estimated by the neural network. This point cloud allows us to determine the surface boundary of the desired object.
 
 In this study, each shape is encoded using an autodecoder and fed as a reference to the network, allowing the network to encode a wider range of objects. As shown in the image, at the top, two codes corresponding to two objects (leftmost and rightmost ones) are encoded by the network, forming the shapes of a sofa and a chair. By interpolating these codes, we observe a subtle transition between the sofa and the chair, with the reconstructed shapes visible on top. Instead of applying this concept to classes of different objects, we applied it to deformed versions of one object. This way, the network can generate the desired deformed version of an object based on the code, which represents the force applied to the object.
 
-![image caption](img/Chp3/interpolate_sdf_codes.png){#fig-interp_sdf_codes fig-align="center" width="40%"}
+quarto
 
 ### SSD on Watertight Mesh - Data preparation
 
-In DeepSDF, the object mesh is required to be watertight. which means that the object surface devides the input and output space to distinguish the positive and negative distances from the surface. we used our First Dataset (FCAD Ver1) for training our network. The dataset were a set of triangular meshes, generated by applying various force constraints to a simple beam. to convert the meshes in SDF format, I used @mesh_to_sdf library that takes these steps:
+In DeepSDF, the object mesh is required to be watertight. which means that the object surface devides the input and output space to distinguish the positive and negative distances from the surface. we used our First Dataset (FCAD Ver1) for training our network. The dataset were a set of triangular meshes, generated by applying various force constraints to a simple beam. To convert the meshes into SDF format, the following steps are required:
 
 -   **Normalization and Scaling**:
 
@@ -78,13 +94,13 @@ activation function
 
 ![image caption](img/Chp1/karo_1D.png){#fig-karo-1d-1 fig-align="center" width="100%"}
 
-![a) Position of the x0 cut through the deep-drawn element. b) Deviations from the template for the 880 simulations. The three drawing depths (30, 50, and 70) are shown in different colors.](img/Chp1/karo_1D_cut.png){fig-align="center" width="100%"}
+![a) Position of the x0 cut through the deep-drawn element. b) Deviations from the template for the 880 simulations. The three drawing depths (30, 50, and 70) are shown in different colors.](img/Chp1/karo_1D_cut.png){#fig-karo-1d-2 fig-align="center" width="100%"}
 
 #### 2D approach
 
 The deviation and thickness values are available not only along the cuts but for all vertices of the reference mesh. The values determined for each vertex of the 3D mesh can be projected onto a 2D plane using a cylindrical projection. Similar to the previous approach, we can train a model to predict the relevant attributes based on the projected 2D coordinates and the process parameters. We use a regression method based on random forests, but the principle remains the same as with neural networks. **Fig. N** shows the deviation and thickness values predicted by the model compared to the ground truth.
 
-![Predicted values compared to the ground truth for the cylindrical projection (Experiment 742).](img/Chp1/karo_2D.jpg){fig-align="center" width="87%"}
+![Predicted values compared to the ground truth for the cylindrical projection (Experiment 742).](img/Chp1/karo_2D.jpg){#fig-karo-2d-1 fig-align="center" width="87%"}
 
 #### 3D approach
 
@@ -146,9 +162,11 @@ Applications of world models span various domains, including robotics, where the
 
 The workflow of a world model-based agent involves data collection through interactions with the environment, model learning to develop perception, transition, and reward models, state inference using the perception module, planning by simulating future states and rewards, and action execution in the real environment. By integrating world models into reinforcement learning, agents achieve more robust and intelligent behavior, making them well-suited for complex and dynamic tasks.
 
+![image caption](img/Chp3/Planet.png){#fig-planet fig-align="center" width="50%"}
+
 ### Perception Module
 
-The perception module processes raw sensory inputs from the environment and transforms them into more compact and useful representations. This typically involves using neural networks such as convolutional neural networks (CNNs) for visual inputs or autoencoders for other types of data. By efficiently encoding sensory information, the perception module helps the agent understand and navigate its environment more effectively.
+The perception module processes raw sensory inputs from the environment and transforms them into more compact and useful representations. This typically involves using neural networks such as autoencoders. By efficiently encoding sensory information, the perception module helps the agent understand and navigate its environment more effectively.
 
 ### Transition Model
 
@@ -162,39 +180,65 @@ The reward model predicts the expected reward for a given state-action pair. By 
 
 With the internal model of the environment, the agent can simulate different action sequences to plan its moves. This planning is often done using model-based algorithms such as Monte Carlo Tree Search (MCTS), trajectory optimization methods, or the Cross Entropy Method (CEM). MCTS explores possible future states by building a search tree, trajectory optimization refines action sequences to maximize rewards, and CEM generates and evaluates a population of action sequences, iteratively refining them based on the best performers. By utilizing these methods, the agent can effectively predict future states and rewards, allowing it to choose actions that optimize its long-term success.
 
+![image caption](img/Chp3/CEM_1.png){#fig-cem fig-align="center" width="50%"}
+
+**Caption:** Formulas representing key components of world models in reinforcement learning, including
+
+the perception module: $$ 
+z = f_\text{perception}(x)
+$$
+
+the transition model : $$ 
+s_{t+1} = f_\text{transition}(s_t, a_t)
+$$
+
+the reward model : $$ 
+r_t = f_\text{reward}(s_t, a_t)
+$$ , and the planning module : $$
+\text{Best Action Sequence} = \arg\max_{a_1, a_2, \ldots, a_T} \sum_{t=1}^{T} f_\text{reward}(s_t, a_t)
+$$
+
+### Problem Definition in RL
+
+state^t^ : the cuboid shape in time t
+
+action^t^ : force vector
+
+state^t+1^ : the cuboid shape in time t+1
+
+and The transition function that models how the state changes due to the applied action:
+
+$$
+\text{state}_{t+1} = f_{\text{transition}}(\text{state}_t, \text{action}_t)
+$$
+
+I solved the problem with 2D and 3D approaches, that will be explained in the next sections.
+
 ## 2D Approach - Image based
 
-As the cuboid is only subjected to force from the top, an image of the top surface can adequately represent the entire shape. For this purpose, I selected the top vertices of the mesh and used the 'Kriging' method from Openturns library @baudin2015open to interpolate the z-values across the entire surface. Kriging @cressie2015statistics also known as "Gaussian process regression", is a method of interpolation based on a Gaussian process governed by prior covariances. It is widely used in spatial analysis and computer experiments to predict values of a spatially distributed variable from sparse data points. Under suitable assumptions of the prior, Kriging provides the Best Linear Unbiased Prediction (BLUP) at unsampled locations, outperforming other interpolation methods based on criteria such as smoothness (e.g., smoothing spline). By considering both the distance and the degree of variation between known data points, Kriging generates a smooth, continuous surface that accurately reflects underlying spatial trends, making it ideal for interpolating from sparse pixels to a smooth image.
+As the cuboid is only subjected to force from the top, an image of the top surface can adequately represent the entire shape. For this purpose, I selected the top vertices of the mesh and used the 'Kriging' method from Openturns library @baudin2015open to interpolate the z-values across the entire surface. Kriging @cressie2015statistics also known as "Gaussian process regression", is a method of interpolation based on a Gaussian process governed by prior covariances. It is widely used in spatial analysis and computer experiments to predict values of a spatially distributed variable from sparse data points. Under suitable assumptions of the prior, Kriging provides the Best Linear Unbiased Prediction (BLUP) at unsampled locations, outperforming other interpolation methods based on criteria such as smoothness (e.g., smoothing spline). By considering both the distance and the degree of variation between known data points, Kriging generates a smooth, continuous surface that accurately reflects underlying spatial trends, making it ideal for interpolating from sparse pixels to a smooth image. \[image size: 20x50\]
 
-Here, I have used Ordinary Kriging because it assumes the process mean to be constant and unknown. By using a covariance model (specifically, the SquaredExponential covariance model) and the openturns Kriging algorithm, we can fit the Kriging metamodel using the provided coordinates and observations. These characteristics align well with the Ordinary Kriging method, as it is capable of providing accurate spatial data estimations. For further information.
+Ordinary Kriging has been used here because it assumes the process mean to be constant and unknown. By utilizing a covariance model (specifically, the SquaredExponential covariance model) and the openturns Kriging algorithm, the Kriging metamodel can be fitted using the provided coordinates and observations. These characteristics align well with the Ordinary Kriging method, as accurate spatial data estimations can be provided. Originally developed for geostatistical applications, Kriging is a versatile statistical interpolation method used across various disciplines for sampled data from random fields that meet certain mathematical assumptions. It is particularly useful for estimating data in the spatial gaps between measured points, whether the data is collected in 2D or 3D.
 
-Originally developed for geostatistical applications, Kriging is a versatile statistical interpolation method that can be used across various disciplines for sampled data from random fields that meet certain mathematical assumptions. It is particularly useful for estimating data in the spatial gaps between measured points, whether the data is collected in 2D or 3D.
+![the depth image of the top surface (left) top vertices visualized on top surface as circles (right) the color shows the depth (z)](img/Chp3/kriging_1.png){fig-align="center" width="40%"}
 
-as the vertices' placements are not ordered and can not be directly used as NN input similar to image pixels, now we have a good quality image of the top surface suitable for NN processing.
+![the regular grid interpolated using kriging method](img/Chp3/kriging_2.png){#fig-krig2 fig-align="center" width="40%"}
 
-![image caption](img/Chp3/kriging_1.png){fig-align="center" width="40%"}
-
-![image caption](img/Chp3/kriging_2.png){#fig-krig2 fig-align="center" width="40%"}
-
-![image caption](img/Chp3/mesh_krig.png){#fig-mesh-krig fig-align="center" width="40%"}
-
-### Setup the RL Environment
-
-action - state definition
+![the deformed shape and its corresponding top image](img/Chp3/mesh_krig.png){#fig-mesh-krig fig-align="center" width="40%"}
 
 ### World Model
 
-the world model is our predictor, in a latent space domain. the WMs can be trained offline or online to reflect the effect of the Force (as action) on the compressed version of the state (shape). first I compressed the data utilizing a Conditional ConvolutionalAutoencoder. My model includes an encoder-decoder structure, where the encoder comprises two convolutional layers with ReLU activations and max pooling operations to progressively reduce the spatial dimensions while increasing feature depth. The latent space is further manipulated through linear layers that incorporate external conditioning information. The decoder then reconstructs the original input using two deconvolutional layers, aiming to produce an output that closely resembles the initial data. The CCAE is trained to minimize the reconstruction loss, making it suitable for image compression.
+the world model is our predictor, in a latent space domain. the WMs can be trained offline or online to reflect the effect of the Force (as action) on the compressed version of the state (shape). first I compressed the data utilizing a Conditional ConvolutionalAutoencoder. My model includes an encoder-decoder structure, where the encoder comprises two convolutional layers with ReLU activation functions and max pooling operations to progressively reduce the spatial dimensions while increasing feature depth. The latent space is further manipulated through linear layers that incorporate external conditioning information. The decoder then reconstructs the original input using two deconvolutional layers, aiming to produce an output that closely resembles the initial data. The CCAE is trained to minimize the reconstruction loss, making it suitable for image compression.
 
-n_latent: compression rate ##todo the best paramaters - reported from HPO : ...
+n_latent: compression rate ##todo the best parameters - reported from HPO : ...
 
-### DeepRL - PlaNet
+![from initial state to final state - NN prediction of states](img/Chp3/cem_2d_seq.png){fig-align="center" width="80%"}
 
-now the trained WM can be applied inside the RL loop.
-
-![image caption](img/Chp3/Planet.png){#fig-planet fig-align="center" width="50%"}
+the proposed approach is limited to top surface and can not effectively generalize to 3D. however has an acceptable accuracy and performance and could be applied for similar problems such as \[# todo examples\] where the 2D prediction would be sufficient.
 
 ## 3D Approach - Vertex based
+
+instead of converting the top surface to the image, we could directly work on 3D coordinates of vertices on top. in this approach, the NN input would be the same as number of top vertices coordinates (x,y,z) , so usually we could have a smaller NN. as the order of NN inputs are important, we need to keep the topology fixed and assure that the order of vertices is remained fix.
 
 Here I -manually- kept the topology fixed. therefore, my vertices have index and they are ordered. so I trained a simple MLP that directly receives the xyz coordinates of the top vertices and the action , to predict the next placement of vectors. as in real, it rarely happens that we have a mesh dataset with identical topology for all samples, that would be an easy and low-cost approach if needed. the same as image approach, all data ( here vertices' coordinates ) corresponding to each state, is fed to the network at once. so the network has a "global" view of each state.
 
@@ -202,7 +246,7 @@ as the data size is relatively small, the vertex positions could be applied in R
 
 ## 3D Approach - Mesh based
 
-For processing the mesh data, we needed to compress the meshes utilizing the well-known CoMA @ranjan2018generating model. the Mesh autoencoder is trained to minimize the reconstruction error on our mesh dataset and using HPO, the best set of parameters are selected. So the trained encoder is now utilized to encode all meshes in the dataset in offline mode.
+For processing the mesh data, we needed to compress the meshes utilizing the well-known CoMA @ranjan2018generating generating model. the Mesh autoencoder is trained to minimize the reconstruction error on our mesh dataset and using HPO, the best set of parameters are selected. So the trained encoder is now utilized to encode all meshes in the dataset in offline mode.
 
 #todo HPO parameters , mish activation function, compression rate
 
@@ -220,18 +264,12 @@ Working with meshes in combination with neural networks presents several fundame
 
 For SDF representation, a fixed grid is established, and the distance from the surface is calculated for all meshes within this grid. This grid is randomly sampled in the space surrounding the shape, both inside and near the surface. The fixed grid is essential for tracking distance values, as the network needs to be aware of the current state to predict the subsequent state. The inputs to the network are the xyz coordinates of the query point, the current SDF value at that point (SDF^t^), and action^~t~^ (a force vector) as a condition, with the output being SDF^t+1^.
 
-![image caption](img/Chp3/net_sequence.png){fig-align="center" width="50%"}
-
-the network architecture and parameters: \[...\]
+![image caption](img/Chp3/net_sequence.png){#fig-implicit-net fig-align="center" width="80%"}
 
 For visualization and evaluation, error metrics are used to compare predicted values with target values in the test set. The test set includes various mesh sequences selected from the dataset to assess our method. Since the current SDF for each point is necessary to predict the next SDF value, the process starts from the initial (undeformed) mesh to generate SDF values sequentially. Initially, an SSD (Single-Step Deformation) Network is used, followed by MSD (Multi-Step Deformation) Networks to predict subsequent SDF values.
 
-This SSD Network is trained on undeformed mesh samples and are the same as model described in \[chapter X\]. the only difference is that, the query points are chosen from our fixed grid point.
+This SSD Network is trained on undeformed mesh samples and are the same as model described in \[chapter X\]. the only difference is that, the query points are chosen from our fixed grid point. also a new input (sdft) is fed to the network to represent the current sdf of the query point.
 
 ### Challenges of working with Implicit data
 
 use of implicit data has a great benefit over explicit methods in applications such as reconstruction, classification etc. they have a good binding with NNs and small network size for embedding and encoding of 3d shapes. however in context of deformation, we need to have a global understanding of the shape - or state - to generalize the action ( Force ) effect on the whole body. as the data unit provided to the network is related to one point ( and not the whole shape ), here the network has a partial observation of the state each time.
-
-## 3D Approach - Signed Differene Vectors on surface samples \[?\]
-
-having the idea of SSD for non-watertight meshes, we end up with a intermediate approach to take advantage of implicit representations and overcoming its challenges / improving its usage.

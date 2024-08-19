@@ -1,1 +1,12 @@
 # Discussion {#sec-discussion}
+
+Given the increasing complexity of systems and tools, and the need to construct and measure more intricate structures, there is a growing necessity to revisit and refine our methods. The finite element method (FEM), as one of the most powerful and practical tools available, has shown remarkable capabilities in solving current problems. However, it seems that we are on the verge of a significant transformation in this field. The industry is increasingly leaning towards alternative processing methods such as meshfree techniques, which are becoming more prevalent and continually advancing.
+
+The ability of implicit methods to learn in a continuous rather than discrete space provides greater flexibility in solving these problems. Moreover, effectively combining these methods with neural networks can lead to more efficient use of intelligent techniques. Neural networks have significant potential in solving physical problems due to their ability to encode data and function as a mapping between different spaces.
+
+Considering that there has been little similar work in this area so far, it is hoped that the ideas presented in this thesis can contribute modestly to the development of such models for the intended applications.
+
+- implicit + NN is in the beginning 
+- applying generative AI (needs to match NN + implicit)
+- the importance of Data 
+- what do we have in reality: powerful software that we trust in + experts with years of experience... (time + cost) 
