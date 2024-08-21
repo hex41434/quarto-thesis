@@ -1,0 +1,119 @@
+# Single Step Deformation {#sec-ssd}
+
+## Introduction
+
+Deformation refers to the change in shape, size, or position of a material or structure when subjected to external forces, such as tension, compression, shear, bending, or torsion. This alteration occurs due to the displacement of particles within the material, resulting in either elastic deformation, where the material returns to its original shape after the removal of the force, or plastic deformation, where the change is permanent. Single-step deformation (SSD) in our context refers to the process of applying a force to a structure or material in a single instance, resulting in a one-time deformation.
+
+In practice, what engineers do is resort to simulations to reduce costs and increase accuracy and speed, using tools like Finite Element Methods (FEM) for this purpose. An expert needs to design the geometry in the software, perform meshing, and then define the fixed and force constraints. After that, they must select the material and choose an appropriate solver, depending on the complexity of the geometry and the problem, as well as the computational power available, and then wait for the simulation results. This process can even take several days, and in the end, the expert evaluates the parameters based on the simulation results. It is usually necessary for the expert to adjust some parameters (based on their experience and knowledge) and rerun the simulation. As it might seem, this can be a challenging process for experts. Moreover, in industry, this can be quite costly because, alongside powerful equipment, a significant amount of time and energy from an expert is required to address a single problem. Therefore, any improvement in this process can be very beneficial and profitable.
+
+The meshing process plays a crucial role in simulations. For the meshes to be effective, they need to meet specific criteria. Often, they’re created with high density to ensure that complex shapes, like curves and corners, are captured accurately. Additionally, the mesh elements must have an appropriate aspect ratio to perform well in simulations. This can sometimes lead to the need for re-meshing, where the mesh is adjusted to better fit the requirements of the analysis. 
+
+\[add image of good/ bad remsehing \]
+
+For effective re-meshing in Finite Element Method (FEM) simulations, **Adaptive Re-Meshing** stands out as a top choice. This method adjusts the mesh density dynamically based on the solution's needs, such as stress concentrations or complex geometrical features. By refining the mesh where high accuracy is required, adaptive re-meshing ensures a balance between precision and computational efficiency, making it ideal for complex structural analyses.
+
+Another excellent approach is **Curvature-Based Re-Meshing**, which focuses on refining the mesh in regions with high curvature to accurately capture the geometry's intricate details. This is particularly beneficial for simulations involving curved surfaces or sharp edges. **Error-Based Re-Meshing** is also highly effective, as it refines the mesh in response to error distributions observed in preliminary simulations. This method allows for iterative improvement of the mesh, leading to more accurate and reliable results in FEM analyses.
+
+On the other hand, it is evident that with re-meshing, the mesh can no longer remain fixed, and at each stage, we encounter a new mesh depending on the requirements. This poses a challenge for using meshes in neural network modeling, as methods based on meshes with consistent topology become very limited. This was a strong reason for us to explore alternative methods that could define the geometry of the object and present it to the neural network independently of the mesh. Among the studied methods, implicit models showed better compatibility with neural networks. However, so far, not much work has been done on deformation using this type of data, which made the task more challenging.
+
+In DeepSDF paper, it was demonstrated that a neural network is capable of encoding a 3D object (and a series of 3D objects). In this scenario, the neural network acts as a function, where, after training, the network can be queried to determine the distance of any arbitrary point from the surface. By querying the network for a sufficient number of points, we can generate a point cloud, where the distances of these points from the surface are estimated by the neural network. This point cloud allows us to determine the surface boundary of the desired object.
+
+\[add image of deepsdf , codes, chairs and autodecoder \]
+
+Furthermore, to generalize across a larger set of objects, a condition was introduced to the neural network. This condition, which is essentially a code, is defined for each object, enabling the SDF function to return the corresponding distance for each point based on this condition. \[more information in section X regarding this coding and autodecoder process\] This adjustment allowed DeepSDF to encode a wider range of objects. In our case, the focus is not on different classes of objects but rather on the deformations of a single object. Therefore, the condition-defining code can be the force vector that causes the deformation. With this setup, we will have a neural network that, conditioned on the force, can predict the deformations of a single object.
+
+\[add image of NN , deformations , query on points, force as condition\]
+
+\[add image of NN , chair , query\]
+
+In this study, each shape is encoded using an autodecoder and fed as a reference - or condition - to the network, allowing the network to encode a wider range of objects. As shown in the image, at the top, two codes corresponding to two objects (leftmost and rightmost ones) are encoded by the network, forming the shapes of a sofa and a chair. By interpolating these codes, we observe a subtle transition between the sofa and the chair, with the reconstructed shapes visible on top. Instead of applying this concept to classes of different objects, we applied it to deformed versions of one object. This way, the network can generate the desired deformed version of an object based on the code, which represents the force applied to the object.
+
+![image caption](img/Chp3/interpolate_sdf_codes.png){#fig-sdf-interpolate fig-align="center" width="70%"}
+
+### SSD on Watertight Mesh
+
+For each object, the SDF function divides the space into three regions: points with positive distances, which are outside the object; points with negative distances, which are inside the object; and boundary points, which lie on the surface. Therefore, it is necessary for the object to have a closed or watertight geometry.
+
+To model deformation and train the neural network, data samples were needed that depicted various states of a 3D object along with the force vectors applied to it. as explained in the previous chapter, The initial shape was kept constant across all data samples, and the intended deformation was achieved by applying a force in a single step. The model being developed was required to estimate the final shape based on the input force vector. At this stage, a neural network model inspired by DeepSDF was designed using **Dataset 1**, with the aim of estimating the corresponding "signed distance" for any given point in space. Ultimately, by querying a large number of points, a set of SDF values was obtained, which were then converted into a mesh using discretization methods such as Marching Cubes, providing an estimate of the final deformed shape.
+
+**SDF Function Estimation:**
+
+Initially, a neural network, denoted as $f_\theta$ , is trained to estimate the Signed Distance Function for a given 3D object. For any point $p$ in the 3D space, the network outputs the SDF value, which indicates the distance of the point from the object's surface:
+
+$$
+SDF(p) = f_\theta(p) 
+$$
+
+Here, $p$ in $R^3$ is a point in the 3D space, and $\theta$ represents the parameters of the neural network.
+
+**Deformation with Force Vector:**
+
+Now, suppose a force vector $F$ is applied to the object. The goal is to condition the SDF estimation on this force vector and predict the SDF of the deformed object.
+
+To achieve this, the neural network is extended to take the force vector $F$ as an additional input, resulting in a modified function:
+
+$$
+SDF_{deformed}(p, F) = f_\theta(p, F) 
+$$
+
+In this formulation:
+
+-   $p$ is still the point in 3D space.
+-   $F\in R^3$ represents the force vector applied to the object.
+-   $SDF_{deformed}(p, F)$ is the SDF value of the deformed object at point $p$.
+
+#### Training Neural Network
+
+the designed neural network needs to map the 3D points in the space, to a corresponding SDF value, based on a provided force vector. similar to the DeepSDF paper, we choose a Multilayer Preceptron for this purpose. HPO
+
+\*\* effect of different parameters on estimation -\> table
+
+activation function, layers, arch , ....
+
+conditional NN
+
+#### Conclusion
+
+So far, it has been demonstrated that this approach is feasible for predicting the deformation shape of watertight objects based on a single applied force. The designed network, despite its small size, is capable of processing large meshes because it is fundamentally independent of mesh structure. The compact size of the network also offers the advantage of faster training and testing speeds, allowing the trained network to predict deformations more quickly than previous methods.
+
+### SSD on non-Watertight Mesh
+
+Earlier, it was observed that the original DeepSDF algorithm is defined based on watertight meshes. But the data provided by our industrial partner, were large non-watertight meshes with a large number of vertices and faces. Therefore the original DeepSDF method could not be applied there directly.
+
+instead we modify the input and train the neural network. the network could predict the thickness, thinning and deviation with an acceptable error.
+
+#### 1D approach
+
+We had approximately 880 meshes that were deformed by varying processing parameters. These parameters were more complex than a simple force vector and included the following: ... In total, the meshes had three different heights—30, 50, and 70 cm. For each model, we had several meshes with the same topology (as shown in the table). For each mesh, values of thickness, thinning, and deviation were recorded on each face, along with the processing parameters that caused the deformation. In the first step, a cross-section was cut through the middle of each mesh, and points were sampled along this cross-section. This provided a one-dimensional distribution of the thickness, thinning, and deviation values for each mesh sample. The goal was to design a neural network that would take the coordinates of each point on the cross-section along with the processing parameters as input and predict the thickness, thinning, and deviation values as output. This task was accomplished with excellent approximation and speed, and the results can be observed in the charts provided.
+
+![image caption](img/Chp1/karo_1D.png){#fig-karo-1d-1 fig-align="center" width="100%"}
+
+![a) Position of the x0 cut through the deep-drawn element. b) Deviations from the template for the 880 simulations. The three drawing depths (30, 50, and 70) are shown in different colors.](img/Chp1/karo_1D_cut.png){#fig-karo-1d-2 fig-align="center" width="100%"}
+
+#### 2D approach
+
+The deviation and thickness values are available not only along the cuts but for all vertices of the reference mesh. The values determined for each vertex of the 3D mesh can be projected onto a 2D plane using a cylindrical projection. Similar to the previous approach, we can train a model to predict the relevant attributes based on the projected 2D coordinates and the process parameters. We use a regression method based on random forests, but the principle remains the same as with neural networks. **Fig. N** shows the deviation and thickness values predicted by the model compared to the ground truth.
+
+![Predicted values compared to the ground truth for the cylindrical projection (Experiment 742).](img/Chp1/karo_2D.jpg){#fig-karo-2d-1 fig-align="center" width="87%"}
+
+network arch \[?] image grid? , HPO,...
+
+#### 3D approach
+
+providing the x,y,z coordinates of the mesh elements - or faces - and corresponding properties: thickness, thinning and deviation, the trained network could provide a good estimation of these properties.
+
+By extending previous models into the third dimension, we designed a model capable of predicting the deformation, thickness, and thinning of the target component. The neural network receives the coordinates of each face and can estimate the corresponding characteristics. The designed network is small in size, resulting in lower complexity and faster execution speed, and it performs very quickly during inference. We also created a simple interface, incorporating parameters as sliders and radio buttons, allowing the user to adjust the desired parameters (both numerical and categorical) and see the deformation results within a few seconds. It’s worth noting that this process, when performed using the Finite Element Method for a similar component, takes approximately 20 minutes according to the project partners. Therefore, the execution of this code appears successful and efficient. Additionally, the model is capable of interpolating for parameters not present in the dataset and can provide higher-resolution predictions.
+
+network arch, ... 
+
+similar approach can be applied to the 3D mesh. We have access to the x-, y-, and z-coordinates of the center of each face of the reference mesh as well as the process parameters. These can be used similarly to the 1D cuts to predict the deviation at specific points of the reference mesh. The size of the dataset for each drawing depth "Zt" is described in the following table:
+
+| Zt  | Number of faces per mesh | Number of simulations | Dataset size |
+|-----|--------------------------|-----------------------|--------------|
+| 30  | 26,759                   | 500                   | 13,379,500   |
+| 50  | 28,587                   | 250                   | 7,146,750    |
+| 70  | 31,976                   | 250                   | 7,994,000    |
+
+#### Joining Process
+
+These components can be attached together in pairs, so we tested whether our algorithm could also be applied to joining. In this case, the designed model must take the parameters of both components as input and output the placement and deformation of each component separately. In joining, the optimal condition occurs when the two components come as close as possible, minimizing the pocket size. The simulation results demonstrated that this method is also applicable for this purpose.

@@ -3,7 +3,7 @@ project:
   output-dir: ./docs
 
 book:
-  title: "Title of the thesis :D "
+  title: "Efficient 3D Deformation Modeling with Deep Learning utilizing Implicit Representations: Enhancing Finite Element Methods for Structural Analysis"
   author:
     - name: Aida Farahani 
       email: aida.farahani@informatik.tu-chemnitz.de
@@ -19,10 +19,11 @@ book:
     - index.qmd
     - 1-Introduction.qmd
     - 2-StateOfTheArt.qmd
-    - 3-Methods.qmd
-    - 4-Results.qmd
-    - 5-Discussion.qmd
-    - 6-Chapter.qmd
+    - 3-DataPreparation.qmd
+    - 4-SingleStepDeformation.qmd
+    - 5-MultiStepDeformation.qmd
+    - 6-Discussion.qmd
+    - 7-Results.qmd
     - References.qmd
 
   output-file: "thesis"

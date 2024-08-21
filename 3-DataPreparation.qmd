@@ -1,0 +1,77 @@
+# Data Preparation {#sec-data}
+
+## Dataset
+
+To train a neural network effectively, the first essential component is a dataset. A dataset provides the necessary examples for the network to learn patterns and make accurate predictions. In the context of 3D shape deformation and FEM simulations, having a comprehensive and high-quality dataset is crucial for the network to understand the complex relationships involved in deformation processes.
+
+Unfortunately, no public datasets specifically for 3D deformation are available. Additionally, the project partner had a limited number of mesh simulations, which required significant time to generate. Consequently, a custom dataset was created to test and train the models. This approach allowed the project to proceed, with the developed models later being applied to the partner’s data.
+
+When searching for deformation and FEM examples, one commonly encountered scenario is a beam fixed at one end, undergoing bending and deformation when a force is applied.
+
+![Beam Structure from Ansys Website](/img/Chp1/Ansys_beam.png){#fig-fem-ansys width="50%"}
+
+This classic example served as inspiration for the dataset design. A slender, rectangular cuboid beam was modeled, fixed at both ends, with a point force applied from various directions to induce deformation.
+
+![Dataset samples - first version](/img/Chp1/deformation_dataset.png){#fig-fem-ds1 width="50%"}
+
+The resulting dataset consisted of approximately 6300 mesh simulations, capturing the deformations caused by different force vectors at various points on the top or bottom surface. This extensive dataset was deemed suitable for training the neural network. FreeCAD software was used for this purpose, with detailed steps and methodologies described in section -XYZ- of this thesis.
+
+By generating this dataset, sufficient data was ensured for robust training and validation of the models. This foundation enabled the development and refinement of the models before their application to the partner’s specific data, ensuring a smooth transition and effective implementation of AI techniques for 3D shape deformation.
+
+FreeCAD, a general-purpose parametric 3D computer-aided design modeler and a building information modeling software application with finite element method support, was chosen for several reasons: it is open-source, supports Python scripting, offers an easy setup for FEM, and has a rich forum and community support.
+
+To perform FEM simulations in FreeCAD, the following steps were followed:
+
+-   Geometry Definition: The 3D model of the beam was created.
+
+-   Fixed Constraints: The fixed points where the beam is held were defined.
+
+-   Force Constraints: Forces were applied at specific points and directions on the beam (this should change during the data generation loop).
+
+-   Material Addition: Material properties were assigned to the beam.
+
+-   FEM Mesh Creation: A triangular mesh for the model was generated.
+
+-   Solving Equations: CalculiX was used to solve the FEM equations and obtain the deformation results.
+
+### FCAD data version 1 (first beam)
+
+The output of FEM is typically a deformed mesh, which is a structure used to represent 3D data. A mesh is a special type of graph characterized by its vertices, edges, and faces, making it an excellent and popular data structure for representing 3D data with various complexities and curvatures, especially useful for depicting deformations.
+
+The output from FreeCAD was a deformed mesh where only the vertex positions differed from the initial mesh. The generated meshes all have the same topology, meaning they have the same number of vertices, and the neighborhood of each vertex remains consistent across all meshes. This consistency in topology ensures that the dataset is suitable for training neural networks, as the structural integrity of the meshes is maintained throughout the simulations. However, as the complexity of the mesh increases, its size also grows, which can make rendering and processing somewhat slower. This trade-off between detail and computational efficiency is a key consideration in the use of meshes for 3D data representation.
+
+### version 2 (press on top)
+
+To display multistep deformation, a new dataset was generated under different conditions. A cube with a larger surface area and shorter height was considered, fixed from the bottom. Random force vectors were applied to the surface and perpendicular to it at various points with different magnitudes. The deformation results were recorded for each step. Since these forces were applied sequentially to the object, it was necessary to record the name of each mesh, the state before and after the force application, along with the force specifications, in a separate table. This was done using a pandas DataFrame to facilitate easier access to the data files.
+
+### 2D images (kriging)
+
+### SDF datasets
+
+In DeepSDF, the object mesh is required to be watertight. which means that the object surface devides the input and output space to distinguish the positive and negative distances from the surface. we used our First Dataset (FCAD Ver1) for training our network. The dataset were a set of triangular meshes, generated by applying various force constraints to a simple beam. To convert the meshes into SDF format, the following steps are required:
+
+-   **Normalization and Scaling**:
+
+    Each 3D mesh is scaled to fit within a unit sphere. This normalization step ensures consistency across different meshes, making the SDF values comparable.
+
+-   **Virtual Camera Rendering**:
+
+    The normalized mesh is virtually rendered from multiple viewpoints. Tipically 100 virtual cameras are placed uniformly on the surface of the unit sphere to capture the shape from different angles.
+
+-   **Distance Calculation**:
+
+    For each viewpoint, the distance from the camera to the closest point on the mesh surface is calculated. This involves projecting points from the 3D space onto the mesh and computing the shortest distance to the mesh triangles.
+
+-   **Point Sampling**:
+
+    Points are sampled more densely near the mesh surface to ensure higher accuracy in regions of interest. In our implementation, we sampled 400,000 points for each shape in the dataset.
+
+-   **Signed Distance Computation**:
+
+    Each sampled point is assigned a signed distance value. The sign indicates whether the point is inside (+) or outside (-) the object, and the magnitude represents the shortest distance to the surface.
+
+-   **SDF Representation Storage**:
+
+    The computed signed distance values for all sampled points are stored, creating a dense representation of the shape’s geometry. which contains x,y,z coordinates of points and the corresponding SDF value.
+
+after converting all meshes in SDF format, we can create a robust dataset and split it to train/test/validation sets. Our fully-connected neural network, designed with six inputs (spatial coordinates and force vectors), demonstrated the capability to accurately predict the SDF values for given deformation scenarios. This approach offers an efficient and flexible solution for modeling geometric deformations in 3D shapes.
