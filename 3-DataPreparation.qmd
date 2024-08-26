@@ -1,4 +1,4 @@
-# Data Preparation {#sec-data}
+# Data Preparation: The Key to Effective Training {#sec-data}
 
 ## Dataset
 
@@ -8,11 +8,11 @@ Unfortunately, no public datasets specifically for 3D deformation are available.
 
 When searching for deformation and FEM examples, one commonly encountered scenario is a beam fixed at one end, undergoing bending and deformation when a force is applied.
 
-![Beam Structure from Ansys Website](/img/Chp1/Ansys_beam.png){#fig-fem-ansys width="50%"}
+![Beam Structure from Ansys Website](/img/Chp1/Ansys_beam.png){#fig-fem-ansys fig-align="center" width="50%"}
 
 This classic example served as inspiration for the dataset design. A slender, rectangular cuboid beam was modeled, fixed at both ends, with a point force applied from various directions to induce deformation.
 
-![Dataset samples - first version](/img/Chp1/deformation_dataset.png){#fig-fem-ds1 width="50%"}
+### Creating Datasets of Deformed Objects {#fig-fem-ds1 width="50%"}
 
 The resulting dataset consisted of approximately 6300 mesh simulations, capturing the deformations caused by different force vectors at various points on the top or bottom surface. This extensive dataset was deemed suitable for training the neural network. FreeCAD software was used for this purpose, with detailed steps and methodologies described in section -XYZ- of this thesis.
 
@@ -24,29 +24,37 @@ To perform FEM simulations in FreeCAD, the following steps were followed:
 
 -   Geometry Definition: The 3D model of the beam was created.
 
+-   FEM Mesh Creation: A triangular mesh for the model was generated.
+
+-   Material Addition: Material properties were assigned to the beam.
+
 -   Fixed Constraints: The fixed points where the beam is held were defined.
 
 -   Force Constraints: Forces were applied at specific points and directions on the beam (this should change during the data generation loop).
 
--   Material Addition: Material properties were assigned to the beam.
+-   Solving Equations: CalculiX was used to solve the FEM equations and obtain the deformation results for each force vector.
 
--   FEM Mesh Creation: A triangular mesh for the model was generated.
-
--   Solving Equations: CalculiX was used to solve the FEM equations and obtain the deformation results.
-
-### FCAD data version 1 (first beam)
+### DefBeam Dataset (Deformed Beam)
 
 The output of FEM is typically a deformed mesh, which is a structure used to represent 3D data. A mesh is a special type of graph characterized by its vertices, edges, and faces, making it an excellent and popular data structure for representing 3D data with various complexities and curvatures, especially useful for depicting deformations.
 
 The output from FreeCAD was a deformed mesh where only the vertex positions differed from the initial mesh. The generated meshes all have the same topology, meaning they have the same number of vertices, and the neighborhood of each vertex remains consistent across all meshes. This consistency in topology ensures that the dataset is suitable for training neural networks, as the structural integrity of the meshes is maintained throughout the simulations. However, as the complexity of the mesh increases, its size also grows, which can make rendering and processing somewhat slower. This trade-off between detail and computational efficiency is a key consideration in the use of meshes for 3D data representation.
 
-### version 2 (press on top)
+### DefCube Dataset (Deformed Cuboid)
 
-To display multistep deformation, a new dataset was generated under different conditions. A cube with a larger surface area and shorter height was considered, fixed from the bottom. Random force vectors were applied to the surface and perpendicular to it at various points with different magnitudes. The deformation results were recorded for each step. Since these forces were applied sequentially to the object, it was necessary to record the name of each mesh, the state before and after the force application, along with the force specifications, in a separate table. This was done using a pandas DataFrame to facilitate easier access to the data files.
+The **DefBeam** dataset consisted of meshes of beams that were fixed at both ends, limiting the possibility of significant deformation to only two or three instances (as shown in the image). Therefore, to be able to demonstrate mesh deformation across multiple steps, it was necessary to design a new dataset. Additionally, to process and test the meshes using previously established methods, such as CoMA, it was essential to maintain consistent topology. This consistency, while feasible in the context of finite element methods , is typically achieved under specific conditions. Usually, after FEM is applied, the mesh is re-meshed (in most simulators) to better capture the geometric details of the resulting structure.
 
-### 2D images (kriging)
+However, by manipulating the **INP** file and accessing the displacement vectors for each node, it was possible to generate various deformations of the meshes while preserving the same topology.
+
+A cube with a larger surface area and shorter height was considered, fixed from the bottom. Random force vectors were applied to the surface and perpendicular to it at various points with different magnitudes. The deformation results were recorded for each step. Since these forces were applied sequentially to the object, it was necessary to save the current mesh (state) and the corresponding force (action) alongside the deformed mesh (next state) which added complexity to the dataset construction process.
+
+### DefImage
+
+For each pair of meshes (in each state), the top view was obtained by projecting the meshes onto a 2D plane, and the resulting image was saved. However, the initial images generated did not have sufficient quality. In a subsequent attempt, the vertices of the top surface were considered, and their zz-coordinates were retained. Kriging interpolation was then applied to generate a smooth surface for the top view. Due to the irregular placement of the vertices, the entire surface needed to be continuously estimated and then converted into a regular grid image. The final result was a set of high-quality images that accurately represent the elevation differences on the top surface of the cuboid, saved as 20x50 grids.
 
 ### SDF datasets
+
+indeed there is no need for creating sdf datasets, while -almost- all CAD datasets can be converted to sdf dataset.
 
 In DeepSDF, the object mesh is required to be watertight. which means that the object surface devides the input and output space to distinguish the positive and negative distances from the surface. we used our First Dataset (FCAD Ver1) for training our network. The dataset were a set of triangular meshes, generated by applying various force constraints to a simple beam. To convert the meshes into SDF format, the following steps are required:
 
