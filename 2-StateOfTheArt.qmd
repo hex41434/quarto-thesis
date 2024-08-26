@@ -1,6 +1,6 @@
 # State of the art {#sec-sota}
 
-### Finite Element Analysis : Current Advancements and Challenges
+## Finite Element Analysis : Current Advancements and Challenges
 
 Despite its significant power and advantages, FEM's primary focus on mesh construction and solving numerous complex partial differential equations (PDEs) can lead to slow performance when dealing with highly intricate problems. This method demands substantial computational power, and each parameter change necessitates a complete re-execution, demonstrating limited flexibility in adapting to changes. Consequently, scientists are actively seeking to improve and potentially replace FEM with more efficient methods.
 
@@ -183,11 +183,11 @@ $$
 
 Once trained, the neural network can efficiently predict the SDF for any point in space, allowing it to reconstruct or generate highly detailed 3D shapes based on the learned implicit representation. This method is particularly useful for tasks requiring smooth and continuous shape representations, such as 3D modeling, shape interpolation, and generation.
 
-### Converting implicit fields to 3D Meshes
+#### Converting implicit fields to 3D Meshes
 
 In the end, implicit fields need to be converted into meshes because this transformation is essential for visualizing, simulating, and processing the shape in a tangible, usable form. Converting implicit fields into 3D meshes involves extracting a clear surface representation from the volumetric data. Methods like the Marching Cubes algorithm are widely used for this purpose, where the 3D space is divided into small cubes, and the surface is triangulated based on the values at the corners of these cubes. Other techniques, such as Dual Contouring or surface nets, offer alternatives for surface extraction, sometimes providing better handling of sharp features or producing more efficient meshes. These methods are essential in transforming the implicit definition of shapes into explicit 3D models for visualization, simulation, and further processing.
 
-#### Marching Cubes
+##### Marching Cubes
 
 The Marching Cubes algorithm is a widely used method for converting implicit fields, such as Signed Distance Functions (SDF) or occupancy fields, into explicit 3D meshes. These implicit fields define a shape indirectly by specifying whether a point in space is inside or outside the shape (occupancy fields) or by providing the shortest distance from any point to the surface of the shape (SDF). The challenge is to extract a clear, explicit surface from this data, which is where Marching Cubes comes in.
 
@@ -195,7 +195,7 @@ The algorithm works by dividing the 3D space into a grid of small cubes, where e
 
 Marching Cubes is particularly popular due to its efficiency and simplicity, as well as its ability to handle complex shapes and produce smooth surfaces. However, while it is effective, it can sometimes produce meshes with a high number of triangles, especially in areas of high curvature, which may require further optimization or simplification depending on the application. Nonetheless, it remains a fundamental tool in computer graphics, medical imaging, and 3D modeling for converting implicit representations into usable 3D models.
 
-#### Dual Contouring
+##### Dual Contouring
 
 Dual Contouring is an algorithm used for extracting a surface mesh from an implicit field, such as a Signed Distance Function (SDF) or an occupancy field. Unlike the Marching Cubes algorithm, which operates directly on the corners of grid cells to produce triangles, Dual Contouring focuses on the edges of the grid cells and generates vertices directly on the surface of the shape being represented. This approach often results in better preservation of sharp features like edges and corners, which can be challenging for Marching Cubes to capture accurately.
 
@@ -203,7 +203,7 @@ The algorithm works by first identifying edges of grid cells where the implicit 
 
 One of the key advantages of Dual Contouring is its ability to generate meshes that accurately capture sharp features without the need for excessive subdivision, leading to more efficient meshes with fewer polygons. This makes it particularly useful in applications where precise geometry is important, such as in computer-aided design (CAD) and high-quality 3D modeling. Additionally, Dual Contouring can be extended to handle adaptive octrees, allowing it to efficiently manage complex, highly detailed surfaces.
 
-#### Surface Nets
+##### Surface Nets
 
 Surface Nets is another algorithm used for extracting a surface mesh from an implicit field. The method can be seen as a middle ground between algorithms like Marching Cubes and Dual Contouring, aiming to create a more straightforward, yet effective, way of generating a 3D mesh that captures the surface of a shape.
 
