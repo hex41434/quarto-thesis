@@ -50,6 +50,17 @@ The workflow of a world model-based agent involves data collection through inter
 
 ![image caption](img/Chp3/Planet.png){#fig-planet fig-align="center" width="50%"}
 
+### PlaNet: Learning Latent Dynamics for Planning from Pixels
+
+The paper "Learning Latent Dynamics for Planning from Pixels" presents a novel approach to model-based reinforcement learning that addresses the challenge of planning in environments with high-dimensional observations, such as images. The authors introduce the Deep Planning Network (PlaNet), an agent that learns a world model from image inputs and leverages it for planning. This method combines the benefits of model-free and model-based approaches, allowing for data-efficient learning and effective planning in complex environments.
+
+
+At the core of PlaNet is a latent dynamics model that consists of several components: (1) a representation model that encodes observations into a compact latent state, (2) a transition model that predicts the next latent state given the current state and action, (3) a reward model that predicts the immediate reward, and (4) an observation model that reconstructs the image observation from the latent state. These components are trained jointly using variational inference, maximizing a lower bound on the log-likelihood of the observed data.
+
+The planning process in PlaNet is performed entirely in the learned latent space, which is significantly more compact than the original image space. The agent uses the Cross-Entropy Method (CEM) to optimize action sequences that maximize predicted rewards over a finite horizon. This planning process is repeated at each time step in a receding horizon fashion, allowing the agent to adapt its plan based on new observations. The authors demonstrate that PlaNet outperforms both model-free and model-based baselines on several challenging continuous control tasks, achieving high performance from pixels with remarkably sample efficiency.
+
+The significance of this work lies in its ability to learn effective world models from high-dimensional inputs without any environment-specific inductive biases. This makes PlaNet applicable to a wide range of tasks without requiring task-specific engineering. Moreover, the latent space planning approach enables the agent to reason about future states and rewards in a computationally efficient manner, overcoming the limitations of planning directly in image space. The paper's results suggest that this approach could be a promising direction for scaling reinforcement learning to more complex, real-world tasks where sample efficiency and the ability to plan from raw sensory inputs are crucial.
+
 ### Perception Module
 
 The perception module processes raw sensory inputs from the environment and transforms them into more compact and useful representations. This typically involves using neural networks such as autoencoders. By efficiently encoding sensory information, the perception module helps the agent understand and navigate its environment more effectively.
@@ -70,17 +81,22 @@ With the internal model of the environment, the agent can simulate different act
 
 **Caption:** Formulas representing key components of world models in reinforcement learning, including
 
-the perception module: $$ 
+the perception module: 
+$$ 
 z = f_\text{perception}(x)
 $$
 
-the transition model : $$ 
+the transition model : 
+$$ 
 s_{t+1} = f_\text{transition}(s_t, a_t)
 $$
 
-the reward model : $$ 
+the reward model : 
+$$ 
 r_t = f_\text{reward}(s_t, a_t)
-$$ , and the planning module : $$
+$$
+and the planning module : 
+$$
 \text{Best Action Sequence} = \arg\max_{a_1, a_2, \ldots, a_T} \sum_{t=1}^{T} f_\text{reward}(s_t, a_t)
 $$
 
@@ -138,7 +154,8 @@ For processing the mesh data, we needed to compress the meshes utilizing the wel
 
 The encoded meshes are again collected in a form of a dataset to train the WM. During the training of the World Model, the neural network is fed with \[State_t, action_t\] as input, to predict the State_t+1. please notice that the state is the encoded shape or the so called latent representation of the mesh.
 
-the same as before, the PlaNet is used here, this time for encoded mesh representation. $$
+the same as before, the PlaNet is used here, this time for encoded mesh representation. 
+$$
 \text{NN}([\text{State}_{t}, \text{action}_t]) \rightarrow \text{State}_{t+1}
 $$
 

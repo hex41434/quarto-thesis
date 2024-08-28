@@ -24,7 +24,7 @@ To perform FEM simulations in FreeCAD, the following steps were followed:
 
 -   Geometry Definition: The 3D model of the beam was created.
 
--   FEM Mesh Creation: A triangular mesh for the model was generated.
+-   FEM Mesh Creation: A triangular mesh for the model was generated. (Gmesh)
 
 -   Material Addition: Material properties were assigned to the beam.
 
@@ -32,7 +32,7 @@ To perform FEM simulations in FreeCAD, the following steps were followed:
 
 -   Force Constraints: Forces were applied at specific points and directions on the beam (this should change during the data generation loop).
 
--   Solving Equations: CalculiX was used to solve the FEM equations and obtain the deformation results for each force vector.
+-   Solving Equations: the solver CalculiX was used to solve the FEM equations and obtain the deformation results for each force vector.
 
 ### DefBeam Dataset (Deformed Beam)
 
@@ -40,23 +40,27 @@ The output of FEM is typically a deformed mesh, which is a structure used to rep
 
 The output from FreeCAD was a deformed mesh where only the vertex positions differed from the initial mesh. The generated meshes all have the same topology, meaning they have the same number of vertices, and the neighborhood of each vertex remains consistent across all meshes. This consistency in topology ensures that the dataset is suitable for training neural networks, as the structural integrity of the meshes is maintained throughout the simulations. However, as the complexity of the mesh increases, its size also grows, which can make rendering and processing somewhat slower. This trade-off between detail and computational efficiency is a key consideration in the use of meshes for 3D data representation.
 
+The dataset contained X triangle meshes with identical topology, X vertices, and dimensions of \[specified dimensions\]. In the image, examples of the generated meshes can be observed.
+
 ### DefCube Dataset (Deformed Cuboid)
 
-The **DefBeam** dataset consisted of meshes of beams that were fixed at both ends, limiting the possibility of significant deformation to only two or three instances (as shown in the image). Therefore, to be able to demonstrate mesh deformation across multiple steps, it was necessary to design a new dataset. Additionally, to process and test the meshes using previously established methods, such as CoMA, it was essential to maintain consistent topology. This consistency, while feasible in the context of finite element methods , is typically achieved under specific conditions. Usually, after FEM is applied, the mesh is re-meshed (in most simulators) to better capture the geometric details of the resulting structure.
+The DefBeam dataset consisted of meshes of beams that were fixed at both ends, limiting the possibility of significant deformation to only two or three instances (as shown in the image). Therefore, to be able to demonstrate mesh deformation across multiple steps, it was necessary to design a new dataset. Additionally, to process and test the meshes using previously established methods, such as CoMA, it was essential to maintain consistent topology. This consistency, while feasible in the context of finite element methods , is typically achieved under specific conditions. Usually, after FEM is applied, the mesh is re-meshed (in most simulators) to better capture the geometric details of the resulting structure.
 
 However, by manipulating the **INP** file and accessing the displacement vectors for each node, it was possible to generate various deformations of the meshes while preserving the same topology.
 
-A cube with a larger surface area and shorter height was considered, fixed from the bottom. Random force vectors were applied to the surface and perpendicular to it at various points with different magnitudes. The deformation results were recorded for each step. Since these forces were applied sequentially to the object, it was necessary to save the current mesh (state) and the corresponding force (action) alongside the deformed mesh (next state) which added complexity to the dataset construction process.
+A cube with a larger surface area and shorter height was considered, fixed from the bottom. Random force vectors were applied to the surface and perpendicular to it at various points with different magnitudes. The deformation results were recorded for each step. Since these forces were applied sequentially to the object, it was necessary to save the current mesh (state) and the corresponding force (action) alongside the deformed mesh (next state) which added complexity to the dataset construction process. To generate a sufficient number of state-action pairs, a maximum of \[specified number\] steps was set. Starting from an initial cuboid (without deformation), various forces were applied at different points within a loop, causing the deformed shape to undergo further deformations. If the deformation reached a level that made the generation of a new mesh impossible, the process was halted and restarted from the new shape. However, if no issues were encountered, state-action pairs were generated up to the specified maximum number.
 
-### DefImage
+The dataset contained X pair of triangle meshes with identical topology, X vertices, and dimensions of \[specified dimensions\]. In the image, examples of the generated meshes can be observed.
 
-For each pair of meshes (in each state), the top view was obtained by projecting the meshes onto a 2D plane, and the resulting image was saved. However, the initial images generated did not have sufficient quality. In a subsequent attempt, the vertices of the top surface were considered, and their zz-coordinates were retained. Kriging interpolation was then applied to generate a smooth surface for the top view. Due to the irregular placement of the vertices, the entire surface needed to be continuously estimated and then converted into a regular grid image. The final result was a set of high-quality images that accurately represent the elevation differences on the top surface of the cuboid, saved as 20x50 grids.
+### DefImage (Deformed Image)
+
+Given that image processing has been extensively researched for years, with standard methods like convolutional neural networks (CNNs) being well-established, the problem was transformed into an image-based one to leverage these conventional techniques. To achieve this, the 3D dataset needed to be converted into an image dataset. Since the deformation primarily occurs on the top surface of the mesh, the top-view image was used to capture the stages of deformation in a 2D image space.
+
+The top view of each pair of meshes in different states was initially obtained by projecting the meshes onto a 2D plane, and the resulting images were saved. However, the quality of these initial images was insufficient, as the projection-based depth images, although suitable for visualization, were not accurate enough for metric analysis. To enhance accuracy, the z-coordinates of the vertices on the top surface were considered in a subsequent attempt. Given that these vertices were irregularly distributed and could not be directly used as image pixels, a continuous surface was first estimated using kriging interpolation. This process allowed for the creation of a smooth surface, which was then converted into a regular grid image. The final outcome was a set of high-quality images, saved as 20x50 grids, accurately representing the elevation differences on the top surface of the cuboid. These images are now suitable for processing with standard image analysis methods, such as convolutional neural networks. The dataset contained \[specified number\] pairs of top-view images corresponding to the DefCube meshes with dimensions of \[specified dimensions\].
 
 ### SDF datasets
 
-indeed there is no need for creating sdf datasets, while -almost- all CAD datasets can be converted to sdf dataset.
-
-In DeepSDF, the object mesh is required to be watertight. which means that the object surface devides the input and output space to distinguish the positive and negative distances from the surface. we used our First Dataset (FCAD Ver1) for training our network. The dataset were a set of triangular meshes, generated by applying various force constraints to a simple beam. To convert the meshes into SDF format, the following steps are required:
+As previously mentioned, a dataset specifically designed for the deformation analysis required by our project did not exist at the time of writing this thesis, so we designed our own datasets. Additionally, in the SDF space, existing mesh datasets are often used and converted into SDF representations. To train a network in the signed distance function (SDF) space, each object must be represented as a point cloud with 3D positions in space and corresponding signed distance values from the surface. The sign of the distance value indicates the direction of the distance vector, effectively showing the point's location relative to the object (inside with a positive sign or outside with a negative sign). Consequently, it is essential for objects to have a watertight property. Although the use of a distance normal vector is sometimes common, it requires additional computations, and in standard SDF representations, the distance magnitude and sign are usually sufficient. The following steps are necessary to convert 3D data into an SDF:
 
 -   **Normalization and Scaling**:
 
@@ -72,7 +76,7 @@ In DeepSDF, the object mesh is required to be watertight. which means that the o
 
 -   **Point Sampling**:
 
-    Points are sampled more densely near the mesh surface to ensure higher accuracy in regions of interest. In our implementation, we sampled 400,000 points for each shape in the dataset.
+    Points were sampled more densely near the mesh surface to ensure higher accuracy in regions of interest. In our implementation, 400,000 points were sampled for each shape in the dataset.
 
 -   **Signed Distance Computation**:
 
@@ -82,4 +86,25 @@ In DeepSDF, the object mesh is required to be watertight. which means that the o
 
     The computed signed distance values for all sampled points are stored, creating a dense representation of the shape’s geometry. which contains x,y,z coordinates of points and the corresponding SDF value.
 
-after converting all meshes in SDF format, we can create a robust dataset and split it to train/test/validation sets. Our fully-connected neural network, designed with six inputs (spatial coordinates and force vectors), demonstrated the capability to accurately predict the SDF values for given deformation scenarios. This approach offers an efficient and flexible solution for modeling geometric deformations in 3D shapes.
+## Data Preprocessing
+Data preprocessing is one of the most critical steps in the machine learning process. Often, raw data is incomplete, inconsistent, or unstructured, which can lead to inaccurate models and increased computational time. Preprocessing ensures that the data is clean, well-structured, and suitable for feeding into machine learning algorithms. By normalizing, standardizing, or otherwise transforming the data, we can improve model performance, ensure faster convergence during training, and achieve more reliable predictions. Two common techniques in data preprocessing are normalization and standardization. Each serves a specific purpose and is better suited for different scenarios.
+
+### Normalization
+
+Normalization is the process of scaling the data so that it fits within a specific range, typically between 0 and 1 or -1 and 1. This technique is particularly useful when the data features have different scales, and we want to bring them to a common scale. Normalization is often used when the model does not assume any particular distribution of the data and when all features should contribute equally. The formula for min-max normalization is:
+$$
+x_{\text{norm}} = \frac{x - \min(x)}{\max(x) - \min(x)}
+$$
+
+### Standardization
+Standardization, also known as Z-score normalization, transforms the data to have a mean of 0 and a standard deviation of 1. This technique is especially effective when the data follows a Gaussian (normal) distribution or when the model assumes normally distributed data. Standardization is beneficial for algorithms that rely on the distribution of data, such as logistic regression or neural networks, as it helps in stabilizing and speeding up the training process.The formula for standardization is:
+
+$$
+x_{\text{std}} = \frac{x - \mu}{\sigma}
+$$
+
+Where:
+$x$ is the original value,
+$min(x)$ and $max(x)$ are the minimum and maximum values in the dataset, respectively (for normalization),
+$\mu$ is the mean of the dataset,
+$\sigma$ is the standard deviation of the dataset.
