@@ -6,54 +6,59 @@ In the past, problem-solving involved identifying the issue and explicitly progr
 
 The emergence of AI, however, has revolutionized this approach. Instead of explicitly programming each step, we now provide the system with vast amounts of data, allowing it to "learn" and adjust itself to achieve the desired results. This learning process enables AI to tackle problems that were previously unsolvable using classical methods. By training models with large datasets, AI systems develop the capability to make predictions, recognize patterns, and generate insights without human intervention in the learning process.
 
-This shift from explicit programming to machine learning opens up possibilities for addressing complex problems across diverse domains. The challenge now lies in selecting the appropriate type of learning—supervised, unsupervised, or reinforcement learning—based on the nature of the problem and the available data. Understanding the strengths and limitations of each learning type is essential for effectively harnessing AI to solve real-world problems. From art and entertainment to industry, manufacturing, and healthcare, AI's transformative impact is evident. These developments highlight the need for individuals and organizations to embrace AI, as leveraging its potential can drive innovation, efficiency, and improvements across various domains. As AI continues to evolve, integrating it into diverse fields becomes increasingly crucial. Therefore, understanding and utilizing AI is essential to remain competitive and progressive.
+This shift from explicit programming to AI opens up possibilities for addressing complex problems across diverse domains. The challenge now lies in selecting the appropriate type of learning—supervised, unsupervised, or reinforcement learning—based on the nature of the problem and the available data. Understanding the strengths and limitations of each learning type is essential for effectively harnessing AI to solve real-world problems. From art and entertainment to industry, manufacturing, and healthcare, AI's transformative impact is evident. These developments highlight the need for individuals and organizations to embrace AI, as leveraging its potential can drive innovation, efficiency, and improvements across various domains. As AI continues to evolve, integrating it into diverse fields becomes increasingly crucial. Therefore, understanding and utilizing AI is essential to remain competitive and progressive.
 
 ## Problem Statement
 
-This thesis stems from a research project that explored using machine learning to improve structural analysis, specifically by optimizing design parameters in FEM simulations. The goal is to enhance the efficiency and accuracy of engineering analyses. The thesis will further detail how machine learning can be integrated into these workflows, aiming to identify effective models, reduce computational costs, and improve decision-making in engineering design. Individuals involved in this process are highly skilled experts, and their involvement represents a significant investment for the industry. Given the complexity and precision required in these tasks, even small improvements in efficiency can lead to substantial cost savings, increased profitability, and significant time savings. Streamlining their workflow, whether through automation or enhanced tools, has the potential not only to reduce expenses but also to accelerate project timelines, allowing companies to bring products to market faster and gain a competitive edge.
+This thesis stems from a research project that explored using AI solutions to improve structural analysis, specifically by optimizing design parameters in FEM simulations. The goal is to enhance the efficiency and accuracy of engineering analyses. The thesis will further detail how AI - or more specifically machine learning - can be integrated into these workflows, aiming to identify effective models, reduce computational costs, and improve decision-making in engineering design. Individuals involved in this process are highly skilled experts, and their involvement represents a significant investment for the industry. Given the complexity and precision required in these tasks, even small improvements in efficiency can lead to substantial cost savings, increased profitability, and significant time savings. Streamlining their workflow, whether through automation or enhanced tools, has the potential not only to reduce expenses but also to accelerate project timelines, allowing companies to bring products to market faster and gain a competitive edge.
 
 ### ML\@Karoprod Project
 
-The BMBF project titled "Machine Learning for the Prediction of Process Parameters and Component Quality in Automotive Body Production (ML\@Karoprod)" focuses on optimizing process parameters in a product chain for deforming a metal plate through a series of operations. From a machine learning perspective, the goal is to streamline this process. Traditionally, an expert conducts FEM simulations, adjusts parameters, and evaluates the results to achieve the desired shape. This iterative process, which takes about 20 minutes per cycle, is repeated until the desired accuracy is reached, with the expert manually making the necessary adjustments and running further simulations.
+The BMBF project titled "Machine Learning for the Prediction of Process Parameters and Component Quality in Automotive Body Production (ML\@Karoprod)" focuses on optimizing process parameters in a product chain for deforming a metal plate through a series of operations. Traditionally, an expert conducts process simulations, adjusts parameters, and evaluates the results to achieve the desired shape. This iterative process, which takes about 20 minutes per cycle, is repeated until the desired accuracy is reached, with the expert manually making the necessary adjustments and running further simulations.
 
-![caption](img/Chp1/karo_process.png){#fig-karo-proc fig-align="center" width="50%"}
+![Process in action - IWU Fraunhofer Dresden](img/Chp1/karo_process.png){#fig-karo-proc fig-align="center" width="50%"}
 
 The process begins with deep drawing, a sheet metal forming technique where a metal blank is radially drawn into a forming die by a punch, with the goal of producing a wrinkle-free and crack-free product. Our simulated deep drawing data consists of a number of valid experiments, each characterized by various process parameters such as blank holder force, insertion position, material ID, and punch ID. In collaboration with our partners, we have identified the relevant set of features that are necessary and sufficient to fully determine the effects of a simulation.
 
-![caption](img/Chp1/karoprod.png){#fig-karo-proc2 fig-align="center" width="50%"} ![caption](img/Chp1/pikaso_enhance__none_2K_Standard_r_c_.jpeg){fig-align="center" width="50%"}
+numerical the sheet thickness (from 0.99 to 1.48 mm) the blank-holder force (from 10 to 500 kN) the insertion position (-5 to +5 mm)
 
-|  |  |
-|-----------------------------------------------|-------------------------|
-| Input parameters | From - to |
-| die diameter | 7.5 .. 12.5mm |
-| die depth in relation to total sheet thickness | 0.2  .. 0.6 |
-| die diameter bottom in relation to punch diameter | 0.8 .. 1.2 |
-| angle die bottom | 15 .. 45 deg |
-| angle die side face | 0 .. 5 deg |
-| punch diameter in relation to die diameter | 0.5 .. 0.75 |
-| radius punch | 0.25 .. 0.5mm |
-| angle punch face | 0 .. 2 deg |
-| angle punch side face | 0 .. 4 deg |
-| thickness upper sheet in relation to total sheet thickness | 0.2 .. 0.8 |
-| bottom thickness | 0.589 .. 5.035mm |
+categorical the drawing depth (30, 50, or 70 mm) the drawing gap (1.6 or 2.4 mm)
+
+material id stemple id (?)
+
+![process](img/Chp1/karoprod.png){#fig-karo fig-align="center" width="50%"}
+
+![higher quality](img/Chp1/pikaso_enhance__none_2K_Standard_r_c_.jpeg){#fig-karo-hq fig-align="center" width="50%"}
+
+![Process Parameters for 1000 simulations](img/Chp1/table_params.png){#table-params fig-align="center" width="50%"}
+
+![Zt](img/Chp1/z70-50-30.png){fig-align="center" width="50%"}
+
+| Zt  | number of  Simulations | number of faces in mesh |
+|-----|------------------------|-------------------------|
+| 30  | 500                    | 26759                   |
+| 50  | 250                    | 28587                   |
+| 70  | 250                    | 31976                   |
 
 Approximately 1000 simulation files in mesh format were generated by the project partner by varying process parameters. After data cleaning, about 880 of these files were usable. The meshes had three different geometries (with three different depths: 30, 50, and 70), and parameters such as force and material varied, resulting in different final mesh outcomes. The ultimate goal in this section was to train a neural network to predict the dependency between changes in input parameters and the generated mesh. With sufficient training, the model would be able to accurately predict the shape of the final mesh even with new inputs that were not seen during training. This allows the specialist to quickly and accurately observe the final simulation results by manipulating parameters, in a much shorter time compared to traditional finite element methods.
 
-|  |  |
+|                                                                                                                                 |                                                                                             |
 |------------------------------------|------------------------------------|
 | ![The reference mesh for extracting face centers (Drawing depth Zt=70).](img/Chp1/banana_1.png){fig-align="center" width="50%"} | ![The same mesh in a closer view](img/Chp1/banana_zoom.png){fig-align="center" width="50%"} |
 
-|  |  |
-|------------------------------------|------------------------------------|
-| ![caption](img/Chp1/ban_sen1.png){fig-align="center"} | ![caption](img/Chp1/ban_sen_2.png){#fig-karo-proc-2 fig-align="center"} |
+## Finite Element Method
 
-## FEM Simulations and applications
+The Finite Element Method (FEM) is a robust computational technique widely used in engineering and physical sciences to solve complex problems related to structures, fluids, and thermal dynamics. The essence of FEM lies in its ability to break down a large, complicated problem into smaller, more manageable parts known as finite elements. By systematically solving these elements, FEM provides an approximate solution that represents the behavior of the entire system.
 
-The Finite Element Method (FEM) is a powerful computational technique used for solving complex structural, fluid, and thermal problems in engineering and physical sciences. It works by breaking down a large problem into smaller, simpler parts known as finite elements, and then systematically solving these elements to understand the behavior of the entire system. FEM is a numerical approximation of the continuous solution field $u$ of any partial differential equation (PDE) given by Eq. (1) on a given domain $\Omega$ can be performed by various methods. Some of the widely used techniques include finite element method \[ref1\], finite volume method \[ref2\], particle methods \[ref3\], and finite cell method \[ref4\]. In this contribution, we restrict the discussion to Galerkin-based finite element methods.
+### Mathematical Foundations
+
+FEM is essentially a numerical approximation method that provides a solution for the continuous field $u$ of any partial differential equation (PDE) defined on a specific domain $Omega$. The governing PDE can be expressed generally as:
 
 $$
 \mathcal{L}(u) = 0 \quad \text{on } \Omega
 $$
+
+with boundary conditions:
 
 $$
 u = u_d \quad \text{on } \Gamma_D
@@ -63,7 +68,19 @@ $$
 \frac{\partial u}{\partial x} = g \quad \text{on } \Gamma_N
 $$
 
-Consider the PDE in Eq. (1) defined on a domain $\Omega$ together with the boundary conditions given by Eqs. 2 and 3. Here, $u_d$ and $g$ are the Dirichlet and Neumann boundary conditions on the respective boundaries. A finite element formulation of Eq. (1) on a discretization of the domain with $m$ elements and $n$ nodes, together with boundary conditions, will result in the system of equations shown by Eq. (4). We assume all the necessary conditions on the test and trial spaces \[ref1\] are fulfilled.
+In these equations, $L(u)$ represents a differential operator applied to the field $u$. This operator encapsulates the specific physical laws governing the problem, such as heat conduction, elasticity, fluid flow, etc. The nature of $L(u)$ depends on the type of PDE being solved:
+
+For thermal problems: $L$ could represent the Laplace operator $\nabla^2 u$ , describing how heat diffuses through a material.
+
+For structural problems: $L(u)$ might include terms representing the balance of forces, such as in the elasticity equations where $L(u)$ could involve the divergence of stress tensors.
+
+For fluid dynamics: $L(u)$ could include the Navier-Stokes equations, which describe the motion of fluid substances.
+
+In general, $L(u) = 0$ defines a PDE that the field $u$ must satisfy over the domain $Omega$.
+
+### Discretization and System of Equations
+
+To solve this PDE using FEM, the domain $Omega$ is discretized into $m$ finite elements with $n$ nodes. This discretization, along with the boundary conditions, leads to a system of linear or non-linear equations. For a linear operator $L$, this system can be represented as:
 
 $$
 \begin{pmatrix}
@@ -86,43 +103,105 @@ F_n
 \end{pmatrix}
 $$
 
-In Eq. (4), ${K}(u)$ is the non-linear left hand side matrix, also called the stiffness matrix. ${u}$ is the discrete solution field, and ${F}$ is the right hand side vector. The residual of the system of equations in Eq. (4) can be written as
+In this equation, ${K}(u)$ is the non-linear left hand side matrix, also called the stiffness matrix. ${u}$ represents the unknowns (i.e., the solution at each node), and ${F}$ is the load vector or the right-hand side of the equation.
+
+### Solving the System: Iterative Techniques
+
+The solution $u^h$ is obtained by solving this system of equations iteratively. A common approach is to use the Newton–Raphson method, which involves linearizing the residual of the system:
 
 $$
 r(u^h) = K(u^h)u^h - F
 $$
 
-To obtain the solution $u^h$, a Newton–Raphson iteration technique can be employed using the linearization of $r(u^h)$ and its tangent matrix. This requires the solution of a linear system of equations in every iteration. These iterations are carried out until the residual norm $\|r(u^h)\|$ meets the tolerance requirements. For a detailed discussion of the methodology, readers are referred to \[ref2\]. For this residual-based formulation, in case of a linear operator $K$, it takes only one iteration to converge. For a large number of elements and nodes, among different steps of the finite element methodology, the most computationally demanding step is the solution of the linear system of equations. In an application where computational efficiency is critical, like real time simulations \[ref3\] and digital twins \[ref4\], it is imperative that this step be avoided. Techniques suitable for such applications, like model order reduction \[ref5, ref6\], construct a surrogate model of Eq. (4) to reduce this cost significantly. Techniques involving neural-networks can completely avoid this cost, but will require a significant amount of training and test data, which is typically generated by simulating the underlying finite element problem. In “**Finite element method-enhanced neural network for forward problems**” section, we discuss an algorithm that combines residual information from a numerical method to train a neural network for linear PDEs. In this case the residual $r(u^h)$ becomes
+The iterations continue until the norm of the residual $r(u^h)$ meets the desired tolerance level. For linear problems, the system converges in one iteration, but for non-linear systems, multiple iterations are generally required. The most computationally intensive step in FEM is often the solution of this linear system, particularly when dealing with a large number of elements and nodes. Given that the mesh and its structure play a critical role in the success or failure of FEM, we will address this topic in detail in the next section.
 
-$$
-r(u^h) = Ku^h - F
-$$
-
-FEM is widely used in various industries to simulate physical phenomena and optimize designs, significantly reducing production costs by allowing for virtual testing and refinement before physical prototypes are created. The method gained prominence in the 1960s and has since undergone significant advancements, driven by improvements in computer technology and numerical algorithms. Today, FEM is integral to fields such as aerospace, automotive, civil engineering, and biomedical engineering, offering highly accurate predictions and contributing to innovation and efficiency in product development. In this thesis however, our focus on FEM is specifically related to structural analysis and deformation problems. Since this thesis aims to explore the potential of using AI methods for solving FEM simulations, a brief introduction to neural networks and their functions is necessary. However, before we discuss neural networks, the structure of the mesh and its importance in FEM problems will be briefly discussed.
-
-## Mesh structure and Its Impact on FEM Analysis
+### Mesh structure and Its Impact on FEM Analysis
 
 A mesh is a specialized type of graph, consisting of vertices (points in 3D space) and edges (connections between these vertices), which collectively form the faces that define the surface of a 3D object. For any given geometry, it is possible to generate an infinite number of meshes, making them highly versatile for representing 3D shapes. Meshes are particularly effective and popular due to their ability to accurately portray complex geometries. By increasing the mesh resolution, the quality and precision of the 3D representation are enhanced, allowing for more detailed and realistic visualizations. Dense meshes, in particular, excel at accurately representing intricate details such as corners and curves, making them essential for rendering complex 3D objects. However, higher resolution meshes come with significant trade-offs, as they require more computational power and advanced graphics cards to manage the increased data load.
 
-![image mesh , vertex, same geometry](img/Chp1/mesh-geom.png){#fig-mesh-geom width="40%" fig-align="center"}
+![three different meshes to represent one 3D object](img/Chp1/mesh-geom.png){#fig-mesh-geom width="40%" fig-align="center"}
 
-![image mesh , vertex, same geometry](img/Chp1/mesh-geo-topo.png){width="40%" fig-align="center"}
+Another aspect of the mesh is its topology. Mesh topology refers to the arrangement and connectivity of elements, such as triangles, quadrilaterals, or tetrahedra, within a mesh. It defines how these elements are connected through their vertices and edges, focusing on the structure and relationships between elements rather than their specific geometric positions. Topology is concerned with the mesh's internal structure without considering the actual spatial coordinates of the points.
 
-A mesh in the context of Finite Element Method (FEM) is defined as a network of interconnected elements that subdivides a complex geometry into smaller, simpler parts, known as elements or cells. These elements can take various shapes, such as triangles or quadrilaterals in 2D, and tetrahedra or hexahedra in 3D. In this context, the vertices of the mesh are referred to as nodes, and the faces are known as elements. The connections between nodes, which form the edges, are typically called edges or connections in FEM. The mesh serves as the framework over which the mathematical equations governing the physical behavior of the system are solved. The quality and resolution of the mesh are crucial, as they directly influence the accuracy, convergence, and computational efficiency of FEM analyses. A finer mesh, with more elements, generally results in higher accuracy but at the cost of increased computational resources. Conversely, a coarser mesh reduces computational demand but may compromise the precision of the simulation. Understanding the structure and characteristics of the mesh is essential for optimizing FEM simulations and achieving reliable results in complex engineering problems.
+On the other hand, geometry deals with the actual spatial placement and shape of the elements in the mesh. Geometry provides the coordinates and dimensions of each element, defining the shape and size of the mesh within the physical domain. While topology describes the connectivity, geometry specifies where the vertices are positioned and how the mesh represents the physical space.
 
-\[image examples of good and bad mesh\]
+![mesh topology vs. geometry](img/Chp1/mesh-geo-topo.png){width="40%" fig-align="center"}
+
+The relationship between topology and geometry is crucial in mesh generation. A mesh with the same topology can have different geometries based on the positioning of the vertices. Good topology is essential for accurately representing the geometry of the model, especially in complex regions. Poor topology, such as elements with bad aspect ratios or improper connectivity, can lead to inaccuracies in representing the geometry, negatively affecting the quality and convergence of the finite element analysis.
+
+A mesh in the context of FEM is defined as a network of interconnected elements that subdivides a complex geometry into smaller, simpler parts, known as elements or cells. These elements can take various shapes, such as triangles or quadrilaterals in 2D, and tetrahedra or hexahedra in 3D. In this context, the vertices of the mesh are referred to as nodes, and the faces are known as elements. The connections between nodes, which form the edges, are typically called edges or connections in FEM. The mesh serves as the framework over which the mathematical equations governing the physical behavior of the system are solved. The quality and resolution of the mesh are crucial, as they directly influence the accuracy, convergence, and computational efficiency of FEM analyses. A finer mesh improves accuracy but requires more computational resources, while a coarser mesh reduces computational demand but lowers precision. Understanding the structure and characteristics of the mesh is essential for optimizing FEM simulations and achieving reliable results in complex engineering problems.
+
+![a bad mesh (left) vs a good mesh (right) for FEM](img/Chp1/fem-mesh-opt.png){width="40%" fig-align="center"}
+
+In general, suitable meshes for FEM should exhibit several essential characteristics: they must be sufficiently refined to accurately capture the geometry and stress gradients of the structure, with a higher mesh density in regions of high stress or complex geometry. The mesh elements should maintain an appropriate aspect ratio, avoiding excessively elongated or distorted shapes, to ensure numerical accuracy and stability. Additionally, the mesh should be well-aligned with the boundaries and features of the model to minimize interpolation errors and enhance the precision of the analysis. It is always important to remember that the significance of the mesh is so crucial that even with a poorly constructed mesh, we can obtain results that are vastly different and full of errors.
+
+FEM is widely used in various industries to simulate physical phenomena and optimize designs, significantly reducing production costs by allowing for virtual testing and refinement before physical prototypes are created. The method gained prominence in the 1960s and has since undergone significant advancements, driven by improvements in computer technology and numerical algorithms. Today, FEM is integral to fields such as aerospace, automotive, civil engineering, and biomedical engineering, offering highly accurate predictions and contributing to innovation and efficiency in product development. In this thesis however, our focus on FEM is specifically related to structural analysis and deformation problems. Since this thesis aims to explore the potential of using AI methods for solving FEM simulations, a brief introduction to neural networks and their functions is necessary.
 
 ## Introduction to Deep Neural Networks
 
-Deep Neural Networks (DNN) represent a significant evolution in the field of artificial intelligence, particularly in machine learning and pattern recognition. Building on the foundation of traditional neural networks, DeepNNs consist of multiple layers of interconnected neurons, allowing them to model complex patterns and relationships in data more effectively than shallow networks. The advent of DeepNNs has revolutionized numerous fields, including computer vision, natural language processing, and reinforcement learning, marking a pivotal shift in the capabilities of AI systems.
+Deep Neural Networks (DeepNN) represent a significant evolution in the field of artificial intelligence, particularly in machine learning and pattern recognition. Building on the foundation of traditional neural networks, DeepNNs consist of multiple layers of interconnected neurons, allowing them to model complex patterns and relationships in data more effectively than shallow networks. The advent of DeepNNs has revolutionized numerous fields, including computer vision, natural language processing, and reinforcement learning, marking a pivotal shift in the capabilities of AI systems.
 
-![caption](img/Chp1/AI_diagram.png){#fig-ai-diag fig-align="center" width="30%"}
+![A hierarchical diagram showing the relationship between Artificial Intelligence, Machine Learning, Neural Networks, and Deep Learning.](img/Chp1/AI_diagram.png){#fig-ai-diag fig-align="center" width="30%"}
 
-The concept of neural networks dates back to the mid-20th century, with the introduction of the perceptron by Frank Rosenblatt in 1958. However, the journey towards DeepNNs gained momentum only in the 1980s, with the development of the backpropagation algorithm, a critical breakthrough enabling the training of multi-layered networks. Backpropagation, introduced by Rumelhart, Hinton, and Williams in 1986, made it feasible to adjust the weights of neural networks through gradient descent, efficiently minimizing the error between predicted and actual outcomes. This algorithm remains at the heart of training deep networks, enabling them to learn complex functions from data.
+The concept of neural networks dates back to the mid-20th century, with the introduction of the Perceptron. Introduced by Frank Rosenblatt in 1958, Perceptron is a type of artificial neuron and one of the earliest models for supervised learning in neural networks. It simulates the way a single neuron in the human brain works by taking multiple input signals, assigning each a weight, summing them up, and then passing the result through an activation function to produce an output. This simple model can classify data into two categories by finding a linear decision boundary, making it foundational for understanding more complex neural network structures. Despite its limitations, such as being unable to solve problems that aren't linearly separable, the perceptron laid the groundwork for modern neural networks and deep learning.
 
-Despite these early advances, DeepNNs struggled to gain traction due to computational limitations and the challenge of vanishing gradients, a problem where gradients used to update the weights become increasingly small in deeper layers, hindering effective learning. This issue was addressed by the introduction of more advanced activation functions like ReLU (Rectified Linear Unit), which helped maintain more consistent gradients, and by innovations such as batch normalization and more sophisticated weight initialization techniques.
+![Perceptron](img/Chp1/perceptron.png){#fig-perceptron fig-align="center" width="30%"}
 
-Key Concepts and Advancements One of the core principles behind the success of DeepNNs is gradient descent, an optimization algorithm used to minimize the loss function. The loss function $L(\theta)$ quantifies the error in the network's predictions, where $\theta$ represents the network's parameters (weights and biases). Gradient descent iteratively adjusts $\theta$ in the direction opposite to the gradient of the loss function, formally expressed as:
+The development of the backpropagation algorithm in the 1980s was a major milestone in the field of neural networks, enabling the effective training of deep, multi-layered networks. Backpropagation, introduced by Rumelhart, Hinton, and Williams in 1986, is a method used to adjust the weights of the network in order to improve its performance. The backpropagation works as follows:
+
+### Forward Pass
+
+In a neural network, the input data is fed forward through the network to generate an output. This involves calculating the output of each neuron in each layer by applying a weighted sum of inputs followed by an activation function.
+
+For a given neuron, the output can be represented as: 
+$$
+z_j = \sum_{i} w_{ji}*x_i + b_j
+$$
+
+where:
+
+$z_j$ is the weighted input to neuron $j$, $w_{ji}$ is the weight connecting input $i$ to neuron $j$, $x_i$ is the input from the previous layer, $b_j$ is the bias term.
+
+The output $a_j$ of neuron $j$ is then calculated using an activation function $\phi : a_j = \phi(z_j)$
+
+### Backward Pass (Backpropagation)
+
+Once the forward pass is complete and the network produces an output, backpropagation is used to adjust the weights. The goal is to determine how much each weight in the network contributed to the error in the output. Backpropagation works by computing the gradient of the error with respect to each weight by propagating the error backward through the network.
+
+The partial derivative of the output with respect to the weight $w_{ji}$ is computed using the chain rule of calculus. For a neuron in the output layer, the error gradient with respect to a weight is given by: 
+$$
+\frac{\partial E}{\partial w_{ji}} = \delta_j \cdot a_i
+$$
+where:
+
+$E$ is the error associated with the output, $\delta_j$ is the error term for neuron $j$, $a_i$ is the output of the neuron in the previous layer.
+
+The error term $\delta_j$ for each neuron in the output layer is: 
+$$
+\delta_j = \phi'(z_j) \cdot (a_j - y_j)
+$$\
+where $y_j$ is the target output.
+
+For neurons in the hidden layers, $delta_j$ is computed as: 
+$$
+\delta_j = \phi'(z_j) \sum_k \delta_k w_{kj}
+$$ 
+where the sum is over all neurons $k$ in the subsequent layer that receive input from neuron $j$.
+
+### Gradient Descent 
+
+After computing the gradients, the weights are updated to minimize the error. Gradient descent is the optimization technique used to adjust the weights. In its simplest form, the weights are updated as follows: 
+$$
+w_{ji}^{new} = w_{ji}^{old} - \eta \frac{\partial E}{\partial w_{ji}}
+$$
+
+where: $\eta$ is the learning rate, a small positive number that controls the step size of the update,
+
+$\frac{\partial E}{\partial w_{ji}}$ is the gradient of the error with respect to the weight.
+
+This process is repeated iteratively across multiple epochs, gradually adjusting the weights to reduce the overall error of the network.
+
+The error mentioned in the previous sections is formally known as the loss function $L(\theta)$, which quantifies the difference between the predicted outputs and the actual target values. Here,$\theta$ represents the network's parameters (weights and biases).
 
 $$
 \theta_{t+1} = \theta_t - \eta \nabla_\theta L(\theta_t)
@@ -130,21 +209,11 @@ $$
 
 where $\eta$ is the learning rate, and $\nabla_\theta L(\theta_t)$ is the gradient of the loss function with respect to the parameters. However, the success of gradient descent in deep networks relies heavily on effective weight initialization, appropriate activation functions, and strategies to mitigate overfitting and vanishing gradients. The introduction of ReLU activation functions, expressed as $f(x)=max(0,x)$, was instrumental in overcoming the vanishing gradient problem by ensuring that gradients remain significant in deeper layers, thus allowing for better learning and performance.
 
-### Learning from Data
-
-A crucial aspect of neural networks is the dataset. Typically, the model is trained on a large amount of training data, validated on a separate validation set, and then tested on unseen test data to evaluate its performance. The selection and preprocessing of data are of particular importance in this process. Neural networks often operate best when the data is scaled within a specific range, usually between 0 and 1. Therefore, considerable effort is made to ensure that the data is normalized to fall within this optimal range, which significantly contributes to the effectiveness of the model.
-
-The success of these architectures has been further amplified by large-scale datasets and the availability of massive computational resources, leading to groundbreaking achievements such as Google's AlphaGo, OpenAI's GPT models, and various state-of-the-art systems in image and speech recognition.
-
-### NN Modularity and Structures
-
-Neural networks are remarkably flexible, allowing various architectures and units to be connected and combined to create more complex models tailored to specific problems. For instance, by increasing or decreasing the number of layers and the number of neurons in each layer, the network's performance can be improved. Another crucial factor is the choice of activation functions, which play a significant role in the learning process. Additionally, specialized layers such as convolutional layers and recurrent layers can be added or removed depending on the data type, the complexity of the problem, and the specific requirements. These adjustments are made to achieve the most suitable architecture for the task at hand.
-
-For instance, a Convolutional Neural Network (CNN) can be enhanced with conditional layers, forming a Conditional Convolutional Neural Network (CCNN) that generates different outputs based on additional context. This modularity adds significant power to the neural network, but it also introduces a considerable level of complexity. The goal is to design models that are as simple as possible while still providing adequate performance to solve the targeted problems effectively.
+The gradient $\nabla_\theta L(\theta_t)$ indicates the direction and rate of the steepest increase in the loss. By moving in the opposite direction, gradient descent reduces the loss, thereby improving the performance of the neural network. However, the success of gradient descent in deep networks relies heavily on factors such as effective weight initialization, the choice of activation functions, and strategies to mitigate challenges like overfitting and the vanishing gradient problem. The introduction of ReLU activation functions, expressed as $f(x)=\max(0,x)$, was instrumental in overcoming the vanishing gradient problem by ensuring that gradients remain significant in deeper layers, thus allowing for better learning and performance.
 
 ### Loss Function
 
-Loss functions play a crucial role in the learning process of neural networks. They serve as a measure of how well or poorly a model's predictions align with the actual target values. By quantifying the error or "loss" between the predicted outputs and the true labels, the loss function guides the adjustment of the model's weights during training. Essentially, the model seeks to minimize the loss function, and by doing so, it iteratively updates the weights to improve accuracy and performance.
+Loss functions serve as a measure of how well or poorly a model's predictions align with the actual target values. By quantifying the error or "loss" between the predicted outputs and the true labels, the loss function guides the adjustment of the model's weights during training. Essentially, the model seeks to minimize the loss function, and by doing so, it iteratively updates the weights to improve accuracy and performance.
 
 In many cases, standard loss functions like Mean Squared Error (MSE) for regression tasks or Cross-Entropy Loss for classification tasks are sufficient. However, there are situations where a custom loss function is necessary to address specific challenges or nuances of the problem at hand. For instance, in imbalanced datasets, where certain classes are underrepresented, a custom loss function might be designed to assign higher penalties to misclassifications of the minority class, thereby ensuring the model learns more effectively. Crafting a custom loss function often requires deep domain knowledge and experience, as it needs to balance the specific objectives of the task with the overall training process. This expertise helps in fine-tuning the loss function to achieve optimal performance for the given problem.
 
@@ -165,12 +234,17 @@ $$
 \text{Combined Loss} = \alpha \cdot \text{Loss1} + \beta \cdot \text{Loss2}
 $$
 
+### NN Modularity and Architectures
+
+Neural networks are remarkably flexible, allowing various architectures and units to be connected and combined to create more complex models tailored to specific problems. For instance, by increasing or decreasing the number of layers and the number of neurons in each layer, the network's performance can be improved. Another crucial factor is the choice of activation functions, which play a significant role in the learning process. Additionally, specialized layers such as convolutional layers and recurrent layers can be added or removed depending on the data type, the complexity of the problem, and the specific requirements. These adjustments are made to achieve the most suitable architecture for the task at hand.
+
+For instance, a Convolutional Neural Network (CNN) can be enhanced with conditional layers, forming a Conditional Convolutional Neural Network (CCNN) that generates different outputs based on additional context. This modularity adds significant power to the neural network, but it also introduces a considerable level of complexity. The goal is to design models that are as simple as possible while still providing adequate performance to solve the targeted problems effectively.
+
 ## Multi-Layer Perceptron (MLP)
 
 MLP is a type of feedforward artificial neural network that consists of multiple layers of neurons, where each layer is fully connected to the next one. The basic unit of an MLP is the perceptron, which computes a weighted sum of its input features and passes the result through an activation function. MLPs typically consist of an input layer, one or more hidden layers, and an output layer. The input layer receives the initial data, the hidden layers process the data through multiple transformations, and the output layer produces the final prediction or classification. MLPs are capable of approximating complex functions and are commonly used in tasks such as classification, regression, and pattern recognition.
 
-The mathematical operation of a single perceptron in an MLP can be expressed as: 
-$$
+The mathematical operation of a single perceptron in an MLP can be expressed as: $$
 z^{(l)} = {W}^{(l)} {a}^{(l-1)} + {b}^{(l)}
 $$
 
@@ -186,8 +260,7 @@ An autoencoder is a type of neural network designed to learn a compressed, effic
 
 Autoencoders, used for tasks like dimensionality reduction or feature learning, can also be improved by incorporating elements such as convolutional layers, recurrent units, or Generative Adversarial Networks (GANs). This integration allows autoencoders to learn more complex data representations, enhancing their effectiveness in applications like anomaly detection or data compression
 
-Mathematically, the process can be represented as: 
-$$
+Mathematically, the process can be represented as: $$
 z = f_\theta(x)
 $$
 

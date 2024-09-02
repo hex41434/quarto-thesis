@@ -1,6 +1,6 @@
 # State of the art {#sec-sota}
 
-## Finite Element Analysis : Current Advancements and Challenges
+## Finite Element Method : Current Advancements and Challenges
 
 Despite its significant power and advantages, FEM's primary focus on mesh construction and solving numerous complex partial differential equations (PDEs) can lead to slow performance when dealing with highly intricate problems. This method demands substantial computational power, and each parameter change necessitates a complete re-execution, demonstrating limited flexibility in adapting to changes. Consequently, scientists are actively seeking to improve and potentially replace FEM with more efficient methods.
 
@@ -9,7 +9,7 @@ Due to the challenges associated with traditional FEM, mesh-free methods have co
 Among the proposed approaches, the Smoothed Particle Hydrodynamics (SPH) \[\] , the Element-Free Galerkin Method (EFGM) \[\] and the Material Point Method (MPM) \[\] have been notable efforts. SPH employs particles to simulate fluid elements and interactions, proving particularly effective for complex fluid dynamics problems. EFGM, on the other hand, utilizes nodes and shape functions to approximate solutions, providing significant flexibility and accuracy for intricate geometries and boundary conditions. Additionally, MPM represents materials as moving points through a computational grid, making it especially suitable for scenarios involving large deformations and complex material behaviors. These mesh-free approaches offer enhanced adaptability and computational efficiency, addressing some of the core limitations of FEM​​.
 
 
-## AI innovations in the FEA domain
+## AI innovations in the FEM domain
 
 In recent years, numerous alternative solutions have been proposed to replace traditional FEM in various problems and subfields. For example, techniques such as \[mention specific alternatives\] and \[mention another alternative\] have been suggested. Specifically, within the domain of structural analysis, which is the focus of this thesis, approaches like \[mention relevant methods\] and \[mention another relevant method\] have been explored.
 

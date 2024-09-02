@@ -117,3 +117,10 @@ similar approach can be applied to the 3D mesh. We have access to the x-, y-, an
 #### Joining Process
 
 These components can be attached together in pairs, so we tested whether our algorithm could also be applied to joining. In this case, the designed model must take the parameters of both components as input and output the placement and deformation of each component separately. In joining, the optimal condition occurs when the two components come as close as possible, minimizing the pocket size. The simulation results demonstrated that this method is also applicable for this purpose.
+
+Z-position of the four clamps
+A clinch ID for each part. 
+
++ The process parameters of the two deep-drawn parts
+
+18 process parameters for joining 
