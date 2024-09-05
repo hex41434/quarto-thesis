@@ -188,13 +188,18 @@ For neurons in the hidden layers, $delta_j$ is computed as: $$
 \delta_j = \phi'(z_j) \sum_k \delta_k w_{kj}
 $$ where the sum is over all neurons $k$ in the subsequent layer that receive input from neuron $j$.
 
-### Gradient Descent
+### Optimizers
 
-After computing the gradients, the weights are updated to minimize the error. Gradient descent is the optimization technique used to adjust the weights. In its simplest form, the weights are updated as follows: $$
+Optimizers are algorithms used to update the weights in a neural network to minimize the loss function and improve performance. Common optimizers include Gradient Descent, SGD, Adam and RMSProp. Optimizers determine how quickly or slowly a model learns and converge toward an optimal solution. There are various types of optimizers, each with its strengths and suited to different types of tasks and data distributions. 
+
+#### Gradient Descent
+Gradient descent is the optimization technique used to adjust the network weights. In its simplest form, the weights are updated as follows: $$
 w_{ji}^{new} = w_{ji}^{old} - \eta \frac{\partial E}{\partial w_{ji}}
 $$
 
-where: $\eta$ is the learning rate, a small positive number that controls the step size of the update,
+where:
+
+$\eta$ is the learning rate, a small positive number that controls the step size of the update,
 
 $\frac{\partial E}{\partial w_{ji}}$ is the gradient of the error with respect to the weight.
 
@@ -208,7 +213,95 @@ $$
 
 where $\eta$ is the learning rate, and $\nabla_\theta L(\theta_t)$ is the gradient of the loss function with respect to the parameters. The gradient $\nabla_\theta L(\theta_t)$ indicates the direction and rate of the steepest increase in the loss. By moving in the opposite direction, gradient descent reduces the loss, thereby improving the performance of the neural network. However, the success of gradient descent in deep networks relies heavily on factors such as effective weight initialization, the choice of activation functions, and strategies to mitigate challenges like overfitting and the vanishing gradient problem. The introduction of ReLU activation functions, expressed as $Relu(x)=\max(0,x)$, was instrumental in overcoming the vanishing gradient problem by ensuring that gradients remain significant in deeper layers, thus allowing for better learning and performance.
 
-#### SGD
+While gradient descent is the foundation of most optimization processes in deep learning, modern optimizers like Adam, RMSProp, and Adagrad improve on basic gradient descent by dynamically adjusting the learning rates and using past information (e.g., momentum or adaptive learning rates). These improvements help accelerate convergence and make training more efficient, especially in cases where the loss landscape is complex and difficult to navigate.
+
+#### Stochastic Gradient Descent
+
+Stochastic Gradient Descent (SGD) is a classic optimization algorithm that updates the model's parameters based on a small random subset (or "batch") of the training data, instead of using the entire dataset like standard gradient descent. This makes the process faster and less computationally expensive. However, because SGD uses a random subset, its updates tend to be noisier, which can cause fluctuations in the loss function. Adding momentum to SGD can help smooth out these noisy updates, leading to more stable convergence. SGD updates the parameters by moving in the direction of the negative gradient of the loss function with respect to the parameters. The update rule for SGD is: $$
+\theta_{t+1} = \theta_t - \eta \nabla_\theta L(\theta_t)
+$$ Where:
+
+$\theta_t$ is the parameter at time step $t$,
+
+$\eta$ is the learning rate,
+
+$\nabla_\theta L(\theta_t)$ is the gradient of the loss function with respect to $\theta_t$.
+
+#### RMSProp (Root Mean Square Propagation)
+
+RMSProp is an adaptive learning rate method that scales the learning rate of each parameter by dividing the gradient by a moving average of its recent squared values. This helps RMSProp to handle non-stationary objectives (where the data distribution changes over time) and improves convergence. It is particularly effective when dealing with mini-batch gradient descent, as it adjusts the learning rate based on how large or small the gradients are, preventing large parameter updates that can hinder training.The update rule is:
+
+1.  Compute the gradients: $$
+    g_t = \nabla_\theta L(\theta_t)
+    $$
+2.  Update the moving average of squared gradients: $$
+    v_t = \beta v_{t-1} + (1 - \beta) g_t^2
+    $$
+3.  Update the parameters: $$
+    \theta_{t+1} = \theta_t - \frac{\eta}{\sqrt{v_t + \epsilon}} g_t
+    $$
+
+Where:
+
+$\eta$ is the learning rate, $\beta$ is the decay rate for the moving average (commonly $\beta = 0.9$), $\epsilon$ is a small constant to prevent division by zero (usually $10^{-8}$), $v_t$ is the moving average of the squared gradients.
+
+#### Momentum
+
+Momentum is a technique used in optimization algorithms to accelerate convergence and reduce oscillations, especially in cases where gradients change direction frequently. It works by maintaining an exponentially decaying moving average of past gradients, which allows the optimizer to continue moving in the direction of consistent gradients, thus dampening oscillations and speeding up convergence. Momentum introduces an additional term to the update rule that accumulates the gradients from previous steps. This accumulated gradient is used to "push" the parameters more in the direction of the overall trend of the loss surface, making the updates smoother and more efficient.
+
+The update rule for momentum is:
+
+1.  Update the velocity (accumulated gradients): $$
+    v_t = \beta v_{t-1} + (1 - \beta) \nabla_\theta L(\theta_t)
+    $$
+
+2.  Update the parameters using the velocity: $$
+    \theta_{t+1} = \theta_t - \eta v_t
+    $$
+
+Where:
+
+$\eta$ is the learning rate,
+
+$\beta$ is the momentum coefficient (commonly set to 0.9),
+
+$v_t$ is the velocity (the exponentially weighted moving average of the gradients),
+
+$\nabla_\theta L(\theta_t)$ is the gradient of the loss function with respect to $\theta_t$.
+
+#### Adam (Adaptive Moment Estimation)
+
+Adam is an adaptive learning rate optimization algorithm that combines the advantages of two popular methods: momentum and RMSProp. It computes individual learning rates for each parameter based on estimates of the first and second moments (mean and variance) of the gradients. This helps the optimizer adjust the learning rate dynamically based on the gradients' behavior. Adam generally works well across a wide range of tasks, making it a popular choice for deep learning applications. It also incorporates bias correction to ensure unbiased estimates in the early stages of training. Adam uses moving averages of the gradients and squared gradients for adaptive learning rates. The update rule is as follows:
+
+1.  Compute the gradients: $$
+    g_t = \nabla_\theta L(\theta_t)
+    $$
+2.  Update biased first moment estimate (mean of gradients): $$
+    m_t = \beta_1 m_{t-1} + (1 - \beta_1) g_t
+    $$
+3.  Update biased second moment estimate (variance of gradients): $$
+    v_t = \beta_2 v_{t-1} + (1 - \beta_2) g_t^2
+    $$
+4.  Bias correction for the first and second moments: $$
+    \hat{m}_t = \frac{m_t}{1 - \beta_1^t}, \quad \hat{v}_t = \frac{v_t}{1 - \beta_2^t}
+    $$
+5.  Update the parameters: $$
+    \theta_{t+1} = \theta_t - \eta \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}
+    $$
+
+Where:
+
+$\eta$ is the learning rate,
+
+$\beta_1$ and $\beta_2$ are decay rates for the first and second moment estimates (default values $\beta_1 = 0.9$, $\beta_2 = 0.999$,
+
+$\epsilon$ is a small constant to prevent division by zero (usually $10^{-8}$),
+
+$m_t$ is the exponentially weighted average of the gradients (first moment estimate),
+
+$v_t$ is the exponentially weighted average of the squared gradients (second moment estimate).
+
+Usually, starting with Adam is a common approach, as it is generally effective across many tasks. Experimenting with different optimizers may be necessary if better performance is needed. Fine-tuning the optimizer's specific hyperparameters (such as beta1 and beta2 in Adam) can also lead to improved results.
 
 ### Activation Function
 
@@ -301,9 +394,10 @@ $$
 
 Where $y$ represents the actual values, $hat{y}$ the predicted values, and $n$ is the total number of data points. The absolute value function ensures that the magnitude of the error is considered regardless of its direction.
 
-#### Mean Squared Error 
+#### Mean Squared Error
 
-MSE loss or L2 loss, is one of the most commonly used loss functions in regression problems. It measures the average squared difference between the predicted values and the actual target values. MSE is particularly sensitive to large errors due to the squaring of the differences, meaning that models producing large errors are penalized more heavily. $$
+MSE loss or L2 loss, is one of the most commonly used loss functions in regression problems. It measures the average squared difference between the predicted values and the actual target values. MSE is particularly sensitive to large errors due to the squaring of the differences, meaning that models producing large errors are penalized more heavily. 
+$$
 \text{MSE} = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
 $$
 
@@ -318,15 +412,22 @@ $$
 Here, $\alpha$ and $\beta$ are non-negative hyperparameters that determine how much each loss contributes to the final combined loss. This approach allows fine-tuning to achieve a desirable trade-off between different properties, such as robustness and precision, depending on the specific task.
 
 ### Challenges and Specifications
-#### (almost) fixed input size
-#### train on large amount of data 
-#### Underfitting
-#### Overfitting 
-Overfitting happens when a neural network becomes too tailored to the training data, capturing noise and irrelevant details, which hinders its ability to generalize to new, unseen data. As a result, the model performs well on the training set but struggles with generalization, leading to poor performance on real-world tasks.
-#### Convergence
-...
 
-### Hyperparameter Tuning and Optimization
+#### (almost) fixed input size
+
+#### train on large amount of data
+
+#### Underfitting
+
+#### Overfitting
+
+#### Vanishing Gradient
+
+Overfitting happens when a neural network becomes too tailored to the training data, capturing noise and irrelevant details, which hinders its ability to generalize to new, unseen data. As a result, the model performs well on the training set but struggles with generalization, leading to poor performance on real-world tasks. 
+
+#### Convergence ...
+
+### Network Hyperparameters
 
 In the field of neural networks, hyperparameters are settings that define the architecture and training process of the model. Unlike the model's parameters (such as weights and biases), hyperparameters are set before the learning process begins and are not learned from the data. Proper tuning of these hyperparameters is crucial for improving the performance of a neural network. Below are some common hyperparameters and the general approach to tuning them.
 
@@ -337,142 +438,46 @@ The learning rate controls how much to adjust the model's weights with respect t
 For the tuning, a common approach is to begin with a standard value, such as 0.001 for Adam or 0.01 for stochastic gradient descent (SGD). Methods like grid search or random search are typically used to explore different values. Additionally, learning rate schedules (e.g., exponential decay, step decay) are often applied to improve training outcomes.
 
 #### Batch Size
+
 Batch size determines how many samples from the training data are used to calculate the gradient before updating the model's parameters. Smaller batch sizes often provide noisier updates but require less memory, making them suitable for limited hardware resources. Larger batch sizes lead to smoother gradient estimates but require more memory.
 
 A common approach is to use batch sizes ranging from 16 to 512, with experimentation often conducted using powers of 2 (e.g., 16, 32, 64, etc.). Smaller batch sizes tend to aid generalization, while larger batches can accelerate the training process.
 
 #### Number of Epochs
+
 The number of epochs defines how many times the entire dataset is passed through the neural network during training. Too few epochs can result in underfitting, where the model fails to learn meaningful patterns from the data. Too many epochs can lead to overfitting, where the model memorizes the training data but fails to generalize to unseen data.
 
 A common approach involves applying early stopping, which halts the training process when the performance on a validation set begins to degrade, thereby preventing overfitting. This method starts with a relatively large number of epochs and continuously monitors the model's performance on the validation set to determine the optimal point to stop training.
 
-#### Optimizer
-Optimizers are algorithms used to update the weights in a neural network to minimize the loss function. Common optimizers include SGD, Adam and RMSProp. Different optimizers have different strengths; for example, Adam is often a good default choice because it combines the advantages of both SGD and momentum-based methods.
+#### Dropout Rate
 
-##### Stochastic Gradient Descent (SGD)
-Stochastic Gradient Descent (SGD) is a classic optimization algorithm that updates the model's parameters based on a small random subset (or "batch") of the training data, instead of using the entire dataset like standard gradient descent. This makes the process faster and less computationally expensive. However, because SGD uses a random subset, its updates tend to be noisier, which can cause fluctuations in the loss function. Adding momentum to SGD can help smooth out these noisy updates, leading to more stable convergence. SGD updates the parameters by moving in the direction of the negative gradient of the loss function with respect to the parameters. The update rule for SGD is:
-$$
-\theta_{t+1} = \theta_t - \eta \nabla_\theta L(\theta_t)
-$$
-Where:
-
-$\theta_t$ is the parameter at time step $t$,
-
-$\eta$ is the learning rate,
-
-$\nabla_\theta L(\theta_t)$ is the gradient of the loss function with respect to $\theta_t$.
-
-##### RMSProp (Root Mean Square Propagation)
-RMSProp is an adaptive learning rate method that scales the learning rate of each parameter by dividing the gradient by a moving average of its recent squared values. This helps RMSProp to handle non-stationary objectives (where the data distribution changes over time) and improves convergence. It is particularly effective when dealing with mini-batch gradient descent, as it adjusts the learning rate based on how large or small the gradients are, preventing large parameter updates that can hinder training.The update rule is:
-
-1. Compute the gradients:
-$$
-g_t = \nabla_\theta L(\theta_t)
-$$
-2. Update the moving average of squared gradients:
-$$
-v_t = \beta v_{t-1} + (1 - \beta) g_t^2
-$$
-3. Update the parameters:
-$$
-\theta_{t+1} = \theta_t - \frac{\eta}{\sqrt{v_t + \epsilon}} g_t
-$$
-
-Where:
-
-$\eta$ is the learning rate,
-$\beta$ is the decay rate for the moving average (commonly $\beta = 0.9$),
-$\epsilon$ is a small constant to prevent division by zero (usually $10^{-8}$),
-$v_t$ is the moving average of the squared gradients.
-
-##### Momentum
-
-Momentum is a technique used in optimization algorithms to accelerate convergence and reduce oscillations, especially in cases where gradients change direction frequently. It works by maintaining an exponentially decaying moving average of past gradients, which allows the optimizer to continue moving in the direction of consistent gradients, thus dampening oscillations and speeding up convergence. Momentum introduces an additional term to the update rule that accumulates the gradients from previous steps. This accumulated gradient is used to "push" the parameters more in the direction of the overall trend of the loss surface, making the updates smoother and more efficient.
-
-The update rule for momentum is:
-
-1. Update the velocity (accumulated gradients):
-$$
-v_t = \beta v_{t-1} + (1 - \beta) \nabla_\theta L(\theta_t)
-$$
-
-2. Update the parameters using the velocity:
-$$
-\theta_{t+1} = \theta_t - \eta v_t
-$$
-
-Where:
-
-$\eta$ is the learning rate,
-$\beta$ is the momentum coefficient (commonly set to 0.9),
-$v_t$ is the velocity (the exponentially weighted moving average of the gradients),
-$\nabla_\theta L(\theta_t)$ is the gradient of the loss function with respect to $\theta_t$.
-
-##### Adam (Adaptive Moment Estimation)
-Adam is an adaptive learning rate optimization algorithm that combines the advantages of two popular methods: momentum and RMSProp. It computes individual learning rates for each parameter based on estimates of the first and second moments (mean and variance) of the gradients. This helps the optimizer adjust the learning rate dynamically based on the gradients' behavior. Adam generally works well across a wide range of tasks, making it a popular choice for deep learning applications. It also incorporates bias correction to ensure unbiased estimates in the early stages of training. 
-Adam uses moving averages of the gradients and squared gradients for adaptive learning rates. The update rule is as follows:
-
-1. Compute the gradients:
-$$
-g_t = \nabla_\theta L(\theta_t)
-$$
-2. Update biased first moment estimate (mean of gradients):
-$$
-m_t = \beta_1 m_{t-1} + (1 - \beta_1) g_t
-$$
-3. Update biased second moment estimate (variance of gradients):
-$$
-v_t = \beta_2 v_{t-1} + (1 - \beta_2) g_t^2
-$$
-4. Bias correction for the first and second moments:
-$$
-\hat{m}_t = \frac{m_t}{1 - \beta_1^t}, \quad \hat{v}_t = \frac{v_t}{1 - \beta_2^t}
-$$
-5. Update the parameters:
-$$
-\theta_{t+1} = \theta_t - \eta \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}
-$$
-
-Where:
-
-$\eta$ is the learning rate,
-
-$\beta_1$ and $\beta_2$ are decay rates for the first and second moment estimates (default values $\beta_1 = 0.9$, $\beta_2 = 0.999$,
-
-$\epsilon$ is a small constant to prevent division by zero (usually $10^{-8}$),
-
-$m_t$ is the exponentially weighted average of the gradients (first moment estimate),
-
-$v_t$ is the exponentially weighted average of the squared gradients (second moment estimate).
-
-
-Usually, starting with Adam is a common approach, as it is generally effective across many tasks. Experimenting with different optimizers may be necessary if better performance is needed. Fine-tuning the optimizer's specific hyperparameters (such as beta1 and beta2 in Adam) can also lead to improved results.
-
-#### 5. **Dropout Rate**  
 Dropout is a regularization technique that randomly drops units (neurons) during training to prevent overfitting. The dropout rate controls the percentage of neurons to drop during each forward pass. High dropout rates can prevent the network from learning effectively, while low dropout rates might not provide enough regularization.
 
-**Tuning Strategy**: Dropout rates typically range from 0.2 to 0.5. Starting with a dropout rate of 0.3 and adjusting based on the model’s performance on the validation set is a common practice.
+Dropout rates typically range from 0.2 to 0.5. Starting with a dropout rate of 0.3 and adjusting based on the model’s performance on the validation set is a common practice.
 
-#### 6. **Number of Layers and Units per Layer**  
+#### Number of Layers and Units per Layer
+
 The architecture of a neural network is another important aspect of hyperparameter tuning. The number of layers (depth) and units per layer (width) determine the capacity of the model to learn from data. More layers and units increase the network’s capacity but also make it more prone to overfitting and computationally expensive to train.
 
-**Tuning Strategy**: Start with a simple architecture and gradually increase the depth and width of the network. Use techniques like grid search or random search to explore different combinations, and incorporate regularization techniques like dropout or L2 regularization to avoid overfitting.
+Start with a simple architecture and gradually increase the depth and width of the network. Use techniques like grid search or random search to explore different combinations, and incorporate regularization techniques like dropout or L2 regularization to avoid overfitting.
 
-#### 7. **Weight Initialization**  
+#### Weight Initialization
+
 Proper weight initialization helps the network converge faster and avoid problems like vanishing or exploding gradients. Popular initialization methods include Xavier (Glorot) initialization for sigmoid or tanh activations, and He initialization for ReLU activations.
 
-**Tuning Strategy**: Usually, the choice of initialization depends on the activation function used. For example, He initialization is effective for layers with ReLU activations, while Xavier initialization works well with sigmoid or tanh. Fine-tuning may not be necessary unless you encounter convergence issues.
+Usually, the choice of initialization depends on the activation function used. For example, He initialization is effective for layers with ReLU activations, while Xavier initialization works well with sigmoid or tanh. Fine-tuning may not be necessary unless you encounter convergence issues.
 
-### Approaches for Hyperparameter Tuning
-1. **Grid Search**: It involves manually specifying a range of values for each hyperparameter and training a model for each combination. While thorough, it can be computationally expensive.
-   
-2. **Random Search**: Instead of trying every combination, random search selects random combinations of hyperparameters. It often performs comparably to grid search but is computationally more efficient.
+### Hyperparameter Tuning
 
-3. **Bayesian Optimization**: This method builds a probabilistic model of the objective function and uses it to select hyperparameters in a way that balances exploration and exploitation. It is more sophisticated than grid or random search and can lead to better performance with fewer trials.
+Hyperparameter tuning is an essential step in developing neural networks that perform well on specific tasks. While no universal set of hyperparameters guarantees success, systematic experimentation and techniques like random search, grid search, or Bayesian optimization can greatly assist in finding the optimal configuration for a given task. 
 
-4. **Automated Hyperparameter Tuning (e.g., Hyperopt, Optuna)**: Automated libraries can simplify the tuning process by intelligently searching for the optimal hyperparameters. These libraries often use strategies like Bayesian optimization, tree-structured Parzen estimators, or evolutionary algorithms to find optimal settings with minimal manual intervention.
+1.  **Grid Search**: It involves manually specifying a range of values for each hyperparameter and training a model for each combination. While thorough, it can be computationally expensive.
 
-Hyperparameter tuning is an essential step in developing neural networks that perform well on specific tasks. While no universal set of hyperparameters guarantees success, systematic experimentation and techniques like random search, grid search, or Bayesian optimization can greatly assist in finding the optimal configuration for a given task. Regularization techniques and dynamic learning rate adjustments further help ensure that the model generalizes well to new data.
+2.  **Random Search**: Instead of trying every combination, random search selects random combinations of hyperparameters. It often performs comparably to grid search but is computationally more efficient.
+
+3.  **Bayesian Optimization**: This method builds a probabilistic model of the objective function and uses it to select hyperparameters in a way that balances exploration and exploitation. It is more sophisticated than grid or random search and can lead to better performance with fewer trials.
+
+4.  **Automated Hyperparameter Tuning (e.g., Hyperopt, Optuna)**: Automated libraries can simplify the tuning process by intelligently searching for the optimal hyperparameters. These libraries often use strategies like Bayesian optimization, tree-structured Parzen estimators, or evolutionary algorithms to find optimal settings with minimal manual intervention.
 
 ## DeepNN Architectures
 
