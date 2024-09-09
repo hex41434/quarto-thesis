@@ -10,63 +10,50 @@ This shift from explicit programming to AI opens up possibilities for addressing
 
 ## Problem Statement
 
-This thesis stems from a research project that explored using AI solutions to improve structural analysis, specifically by optimizing design parameters in FEM simulations. The goal is to enhance the efficiency and accuracy of engineering analyses. The thesis will further detail how AI - or more specifically machine learning - can be integrated into these workflows, aiming to identify effective models, reduce computational costs, and improve decision-making in engineering design. Individuals involved in this process are highly skilled experts, and their involvement represents a significant investment for the industry. Given the complexity and precision required in these tasks, even small improvements in efficiency can lead to substantial cost savings, increased profitability, and significant time savings. Streamlining their workflow, whether through automation or enhanced tools, has the potential not only to reduce expenses but also to accelerate project timelines, allowing companies to bring products to market faster and gain a competitive edge.
+This thesis stems from a research project that explored using AI solutions to improve structural analysis, specifically by optimizing design parameters in Structural simulations. The goal is to enhance the efficiency and accuracy of engineering analyses. The thesis will further detail how AI - or more specifically machine learning - can be integrated into these workflows, aiming to identify effective models, reduce computational costs, and improve decision-making in engineering design. Individuals involved in this process are highly skilled experts, and their involvement represents a significant investment for the industry. Given the complexity and precision required in these tasks, even small improvements in efficiency can lead to substantial cost savings, increased profitability, and significant time savings. Streamlining their workflow, whether through automation or enhanced tools, has the potential not only to reduce expenses but also to accelerate project timelines, allowing companies to bring products to market faster and gain a competitive edge.
 
 ### ML\@Karoprod Project
 
-The BMBF project titled "Machine Learning for the Prediction of Process Parameters and Component Quality in Automotive Body Production (ML\@Karoprod)" focuses on optimizing process parameters in a product chain for deforming a metal plate through a series of operations. Traditionally, an expert conducts process simulations, adjusts parameters, and evaluates the results to achieve the desired shape. This iterative process, which takes about 20 minutes per cycle, is repeated until the desired accuracy is reached, with the expert manually making the necessary adjustments and running further simulations.
+The BMBF project titled "Machine Learning for the Prediction of Process Parameters and Component Quality in Automotive Body Production (ML\@Karoprod)" focuses on optimizing process parameters in a product chain for deforming a metal plate through a series of operations. In this project, conducted in collaboration with TU Chemnitz, IWU Fraunhofer Dresden, and SCALE GmbH, the aim was to leverage the machine learning methods to ensure high-quality products. Traditionally, an expert conducts process simulations, adjusts parameters, and evaluates the results to achieve the desired shape. This iterative process, which takes about 20 minutes per cycle, is repeated until the desired accuracy is reached, with the expert manually making the necessary adjustments and running further simulations.
 
 ![Process in action - IWU Fraunhofer Dresden](img/Chp1/karo_process.png){#fig-karo-proc fig-align="center" width="50%"}
 
-The process begins with deep drawing, a sheet metal forming technique where a metal blank is radially drawn into a forming die by a punch, with the goal of producing a wrinkle-free and crack-free product. Our simulated deep drawing data consists of a number of valid experiments, each characterized by various process parameters such as blank holder force, insertion position, material ID, and punch ID. In collaboration with our partners, we have identified the relevant set of features that are necessary and sufficient to fully determine the effects of a simulation.
+The process begins with deep drawing, a sheet metal forming technique where a metal blank is radially drawn into a forming die by a punch, with the goal of producing a wrinkle-free and crack-free product. Our simulated deep drawing data consists of a number of valid experiments, each characterized by various process parameters. In collaboration with our partners, the relevant set of features that are necessary and sufficient to fully determine the effects of a simulation were identified. The features were divided into numerical and categorical types. That is, numerical features represented continuous values (the sheet thickness (from 0.99 to 1.48 mm) the blank-holder force (from 10 to 500 kN) and the insertion position (-5 to +5 mm)), while categorical features represented distinct classes or groups (the drawing depth (30, 50, or 70 mm) the drawing gap (1.6 or 2.4 mm)). To represent the different materials and stamps, IDs were assigned to uniquely identify each type of feature.
 
-numerical the sheet thickness (from 0.99 to 1.48 mm) the blank-holder force (from 10 to 500 kN) the insertion position (-5 to +5 mm)
+![from blank metal sheets to the product](img/Chp1/pikaso_enhance__none_2K_Standard_r_c_.jpeg){#fig-karo-hq fig-align="center" width="50%"}
 
-categorical the drawing depth (30, 50, or 70 mm) the drawing gap (1.6 or 2.4 mm)
+![For each set of parameters in a row, one mesh were provided.](img/Chp1/table_params.png){#table-params fig-align="center" width="50%"}
 
-material id stemple id (?)
+Approximately 1000 simulation files in mesh format were generated by the project partner by varying process parameters. After data cleaning, about 880 of these files were usable. The meshes had three different geometries (with three different depths: 30, 50, and 70 shown in @fig-zt), and parameters such as force and material varied, resulting in different final mesh outcomes. The ultimate goal in this section was to train a neural network to predict the dependency between changes in input parameters and the generated mesh. With sufficient training, the model would be able to accurately predict the shape of the final mesh even with new inputs that were not seen during training. This allows the specialist to quickly and accurately observe the final simulation results by manipulating parameters, in a much shorter time compared to traditional finite element methods.
 
-![process](img/Chp1/karoprod.png){#fig-karo fig-align="center" width="50%"}
+![a view of three different meshes with different drawing depths : 30,50,70.](img/Chp1/z70-50-30.png){#fig-zt fig-align="center" width="50%"}
 
-![higher quality](img/Chp1/pikaso_enhance__none_2K_Standard_r_c_.jpeg){#fig-karo-hq fig-align="center" width="50%"}
-
-![Process Parameters for 1000 simulations](img/Chp1/table_params.png){#table-params fig-align="center" width="50%"}
-
-![Zt](img/Chp1/z70-50-30.png){fig-align="center" width="50%"}
-
-| Zt  | number of  Simulations | number of faces in mesh |
-|-----|------------------------|-------------------------|
-| 30  | 500                    | 26759                   |
-| 50  | 250                    | 28587                   |
-| 70  | 250                    | 31976                   |
-
-Approximately 1000 simulation files in mesh format were generated by the project partner by varying process parameters. After data cleaning, about 880 of these files were usable. The meshes had three different geometries (with three different depths: 30, 50, and 70), and parameters such as force and material varied, resulting in different final mesh outcomes. The ultimate goal in this section was to train a neural network to predict the dependency between changes in input parameters and the generated mesh. With sufficient training, the model would be able to accurately predict the shape of the final mesh even with new inputs that were not seen during training. This allows the specialist to quickly and accurately observe the final simulation results by manipulating parameters, in a much shorter time compared to traditional finite element methods.
 
 |                                                                                                                                 |                                                                                             |
 |------------------------------------|------------------------------------|
-| ![The reference mesh for extracting face centers (Drawing depth Zt=70).](img/Chp1/banana_1.png){fig-align="center" width="50%"} | ![The same mesh in a closer view](img/Chp1/banana_zoom.png){fig-align="center" width="50%"} |
+| ![The reference mesh for extracting face centers (Drawing depth Zt=70).](img/Chp1/banana_1.png){#fig-z70 fig-align="center" width="50%"} | ![The same mesh in a closer view](img/Chp1/banana_zoom.png){#fig-z70-zoom fig-align="center" width="50%"} |
 
 ## Finite Element Method
 
-The Finite Element Method (FEM) is a robust computational technique widely used in engineering and physical sciences to solve complex problems related to structures, fluids, and thermal dynamics. The essence of FEM lies in its ability to break down a large, complicated problem into smaller, more manageable parts known as finite elements. By systematically solving these elements, FEM provides an approximate solution that represents the behavior of the entire system.
+The Finite Element Method (FEM) [@liu2022eighty] is a robust computational technique widely used in engineering and physical sciences to solve complex problems related to structures, fluids, and thermal dynamics. While the exact origin of the finite element method is hard to define, its creation was driven by the necessity to solve complex problems in elasticity and structural analysis. The method’s development traces back to early contributions by Alexander Hrennikoff [@hrennikoff1941solution] and Richard Courant [@courant1994variational] in the 1940s. The essence of FEM lies in its ability to break down a large, complicated problem into smaller, more manageable parts known as finite elements. By systematically solving these elements, FEM provides an approximate solution that represents the behavior of the entire system.
 
 ### Mathematical Foundations
 
-FEM is essentially a numerical approximation method that provides a solution for the continuous field $u$ of any partial differential equation (PDE) defined on a specific domain $Omega$. The governing PDE can be expressed generally as:
+FEM is essentially a numerical approximation method that provides a solution for the continuous field $u$ of any partial differential equation (PDE) defined on a specific domain $\Omega$. The governing PDE can be expressed generally as:
 
 $$
 \mathcal{L}(u) = 0 \quad \text{on } \Omega
-$$
+$$ {#eq-fem-1}
 
 with boundary conditions:
 
 $$
 u = u_d \quad \text{on } \Gamma_D
-$$
+$${#eq-fem-2}
 
 $$
 \frac{\partial u}{\partial x} = g \quad \text{on } \Gamma_N
-$$
+$$ {#eq-fem-3}
 
 In these equations, $L(u)$ represents a differential operator applied to the field $u$. This operator encapsulates the specific physical laws governing the problem, such as heat conduction, elasticity, fluid flow, etc. The nature of $L(u)$ depends on the type of PDE being solved:
 
@@ -76,11 +63,11 @@ For structural problems: $L(u)$ might include terms representing the balance of 
 
 For fluid dynamics: $L(u)$ could include the Navier-Stokes equations, which describe the motion of fluid substances.
 
-In general, $L(u) = 0$ defines a PDE that the field $u$ must satisfy over the domain $Omega$.
+In general, $L(u) = 0$ defines a PDE that the field $u$ must satisfy over the domain $\Omega$.
 
 ### Discretization and System of Equations
 
-To solve this PDE using FEM, the domain $Omega$ is discretized into $m$ finite elements with $n$ nodes. This discretization, along with the boundary conditions, leads to a system of linear or non-linear equations. For a linear operator $L$, this system can be represented as:
+To solve this PDE using FEM, the domain $\Omega$ is discretized into $m$ finite elements with $n$ nodes. This discretization, along with the boundary conditions, leads to a system of linear or non-linear equations. For a linear operator $L$, this system can be represented as:
 
 $$
 \begin{pmatrix}
@@ -101,7 +88,7 @@ F_2 \\
 \vdots \\
 F_n
 \end{pmatrix}
-$$
+$${#eq-Kmatrix}
 
 In this equation, ${K}(u)$ is the non-linear left hand side matrix, also called the stiffness matrix. ${u}$ represents the unknowns (i.e., the solution at each node), and ${F}$ is the load vector or the right-hand side of the equation.
 
@@ -111,7 +98,7 @@ The solution $u^h$ is obtained by solving this system of equations iteratively. 
 
 $$
 r(u^h) = K(u^h)u^h - F
-$$
+$${#eq-fem-it}
 
 The iterations continue until the norm of the residual $r(u^h)$ meets the desired tolerance level. For linear problems, the system converges in one iteration, but for non-linear systems, multiple iterations are generally required. The most computationally intensive step in FEM is often the solution of this linear system, particularly when dealing with a large number of elements and nodes. Given that the mesh and its structure play a critical role in the success or failure of FEM, we will address this topic in detail in the next section.
 
@@ -125,31 +112,31 @@ Another aspect of the mesh is its topology. Mesh topology refers to the arrangem
 
 On the other hand, geometry deals with the actual spatial placement and shape of the elements in the mesh. Geometry provides the coordinates and dimensions of each element, defining the shape and size of the mesh within the physical domain. While topology describes the connectivity, geometry specifies where the vertices are positioned and how the mesh represents the physical space.
 
-![mesh topology vs. geometry](img/Chp1/mesh-geo-topo.png){width="40%" fig-align="center"}
+The relationship between topology and geometry is crucial in mesh generation. A mesh with the same topology can have different geometries based on the positioning of the vertices. Good topology is essential for accurately representing the geometry of the model, especially in complex regions. Poor topology, such as elements with bad aspect ratios or improper connectivity, can lead to inaccuracies in representing the geometry, negatively affecting the quality and convergence of the finite element analysis. The comparison between topology and mesh geometry is shown in Figure @fig-topo-geom.
 
-The relationship between topology and geometry is crucial in mesh generation. A mesh with the same topology can have different geometries based on the positioning of the vertices. Good topology is essential for accurately representing the geometry of the model, especially in complex regions. Poor topology, such as elements with bad aspect ratios or improper connectivity, can lead to inaccuracies in representing the geometry, negatively affecting the quality and convergence of the finite element analysis.
+![mesh topology vs. geometry](img/Chp1/mesh-geo-topo.png){#fig-topo-geom width="40%" fig-align="center"}
 
-A mesh in the context of FEM is defined as a network of interconnected elements that subdivides a complex geometry into smaller, simpler parts, known as elements or cells. These elements can take various shapes, such as triangles or quadrilaterals in 2D, and tetrahedra or hexahedra in 3D. In this context, the vertices of the mesh are referred to as nodes, and the faces are known as elements. The connections between nodes, which form the edges, are typically called edges or connections in FEM. The mesh serves as the framework over which the mathematical equations governing the physical behavior of the system are solved. The quality and resolution of the mesh are crucial, as they directly influence the accuracy, convergence, and computational efficiency of FEM analyses. A finer mesh improves accuracy but requires more computational resources, while a coarser mesh reduces computational demand but lowers precision. Understanding the structure and characteristics of the mesh is essential for optimizing FEM simulations and achieving reliable results in complex engineering problems.
+A mesh in the context of FEM is defined as a network of interconnected elements that subdivides a complex geometry into smaller, simpler parts, known as elements or cells. These elements can take various shapes, such as triangles or quadrilaterals in 2D, and tetrahedra or hexahedra in 3D. In this context, the vertices of the mesh are referred to as nodes, and the faces are known as elements. The connections between nodes, which form the edges, are typically called edges or connections in FEM. The mesh serves as the framework over which the mathematical equations governing the physical behavior of the system are solved. The quality and resolution of the mesh are crucial, as they directly influence the accuracy, convergence, and computational efficiency of FEM analyses. A finer mesh improves accuracy but requires more computational resources, while a coarser mesh reduces computational demand but lowers precision. Understanding the structure and characteristics of the mesh is essential for optimizing FEM simulations and achieving reliable results in complex engineering problems. In Figure @fig-fem-mesh-quality, you can see an example of a suitable mesh for FEM and an unsuitable one.
 
-![a bad mesh (left) vs a good mesh (right) for FEM](img/Chp1/fem-mesh-opt.png){width="40%" fig-align="center"}
+![a bad mesh (left) vs a good mesh (right) for FEM](img/Chp1/fem-mesh-opt.png){#fig-fem-mesh-quality width="40%" fig-align="center"}
 
 In general, suitable meshes for FEM should exhibit several essential characteristics: they must be sufficiently refined to accurately capture the geometry and stress gradients of the structure, with a higher mesh density in regions of high stress or complex geometry. The mesh elements should maintain an appropriate aspect ratio, avoiding excessively elongated or distorted shapes, to ensure numerical accuracy and stability. Additionally, the mesh should be well-aligned with the boundaries and features of the model to minimize interpolation errors and enhance the precision of the analysis. It is always important to remember that the significance of the mesh is so crucial that even with a poorly constructed mesh, we can obtain results that are vastly different and full of errors.
 
-FEM is widely used in various industries to simulate physical phenomena and optimize designs, significantly reducing production costs by allowing for virtual testing and refinement before physical prototypes are created. The method gained prominence in the 1960s and has since undergone significant advancements, driven by improvements in computer technology and numerical algorithms. Today, FEM is integral to fields such as aerospace, automotive, civil engineering, and biomedical engineering, offering highly accurate predictions and contributing to innovation and efficiency in product development. In this thesis however, our focus on FEM is specifically related to structural analysis and deformation problems. Since this thesis aims to explore the potential of using AI methods for solving FEM simulations, a brief introduction to neural networks and their functions is necessary.
+FEM is widely used in various industries to simulate physical phenomena and optimize designs, significantly reducing production costs by allowing for virtual testing and refinement before physical prototypes are created. The method gained prominence in the 1960s and has since undergone significant advancements, driven by improvements in computer technology and numerical algorithms.Today, FEM is integral to fields such as aerospace, automotive, civil engineering, and biomedical engineering, offering highly accurate predictions and contributing to innovation and efficiency in product development. In this thesis however, our focus on FEM is specifically related to structural analysis and deformation problems. Since this thesis aims to explore the potential of using AI methods for solving FEM simulations, a brief introduction to neural networks and their functions is necessary.
 
 ## Introduction to Deep Neural Networks
 
-Deep Neural Networks (DeepNN) represent a significant evolution in the field of artificial intelligence, particularly in machine learning and pattern recognition. Building on the foundation of traditional neural networks, DeepNNs consist of multiple layers of interconnected neurons, allowing them to model complex patterns and relationships in data more effectively than shallow networks. The advent of DeepNNs has revolutionized numerous fields, including computer vision, natural language processing, and reinforcement learning, marking a pivotal shift in the capabilities of AI systems.
+Deep Neural Networks (DeepNN) [@lecun2015deep] represent a significant evolution in the field of artificial intelligence, particularly in machine learning and pattern recognition. Building on the foundation of traditional neural networks, DeepNNs consist of multiple layers of interconnected neurons, allowing them to model complex patterns and relationships in data more effectively than shallow networks. The advent of DeepNNs has revolutionized numerous fields, including computer vision, natural language processing, and reinforcement learning, marking a pivotal shift in the capabilities of AI systems. The diagram in @fig-ai-diag presents how Artificial Intelligence, Machine Learning, Neural Networks, and Deep Learning are related.
 
 ![A hierarchical diagram showing the relationship between Artificial Intelligence, Machine Learning, Neural Networks, and Deep Learning.](img/Chp1/AI_diagram.png){#fig-ai-diag fig-align="center" width="30%"}
 
 ### Perceptron
 
-The concept of neural networks dates back to the mid-20th century, with the introduction of the Perceptron. Introduced by Frank Rosenblatt in 1958, Perceptron is a type of artificial neuron and one of the earliest models for supervised learning in neural networks. It simulates the way a single neuron in the human brain works by taking multiple input signals, assigning each a weight, summing them up, and then passing the result through an activation function to produce an output. This simple model can classify data into two categories by finding a linear decision boundary, making it foundational for understanding more complex neural network structures. Despite its limitations, such as being unable to solve problems that aren't linearly separable, the perceptron laid the groundwork for modern neural networks and deep learning.
+The history of the perceptron begins in 1943 with McCulloch and Pitts [@mcculloch1943logical], who developed the first theoretical model of a neuron. In 1958, Frank Rosenblatt [@Rosenblatt_1957_6098] expanded on their work and introduced the perceptron as a learning algorithm for binary classification. His work laid the foundation for neural networks and machine learning as we know them today.
+
+It simulates the way a single neuron in the human brain works by taking multiple input signals, assigning each a weight, summing them up, and then passing the result through an activation function to produce an output. This simple model can classify data into two categories by finding a linear decision boundary, making it foundational for understanding more complex neural network structures. Despite its limitations, such as being unable to solve problems that aren't linearly separable, the perceptron laid the groundwork for modern neural networks and deep learning.
 
 ![Perceptron](img/Chp1/perceptron.png){#fig-perceptron fig-align="center" width="50%"}
-
-The development of the backpropagation algorithm in the 1980s was a major milestone in the field of neural networks, enabling the effective training of deep, multi-layered networks. Backpropagation, introduced by Rumelhart, Hinton, and Williams in 1986, is a method used to adjust the weights of the network in order to improve its performance. The backpropagation works as follows:
 
 ### Forward Pass
 
@@ -158,53 +145,55 @@ In a neural network, the input data is fed forward through the network to genera
 For a given neuron, the output can be represented as: 
 $$
 z_j = \sum_{i} w_{ji}*x_i + b_j
-$$
+$${#eq-prec1}
 
 where:
 
-$z_j$ is the weighted input to neuron $j$, $w_{ji}$ is the weight connecting input $i$ to neuron $j$, $x_i$ is the input from the previous layer, $b_j$ is the bias term.
+$z_j$ is the weighted input to neuron $j$, 
+$w_{ji}$ is the weight connecting input $i$ to neuron $j$, 
+$x_i$ is the input from the previous layer, $b_j$ is the bias term.
 
-The output $a_j$ of neuron $j$ is then calculated using an activation function $\sigma$ :\
+The output $a_j$ of neuron $j$ is then calculated using an activation function $\phi$ :\
 $$
-a_j = \sigma(z_j)
-$$
+a_j = \phi(z_j)
+$${#eq-prec2}
 
 ### Backpropagation
 
-Once the forward pass is complete and the network produces an output, a backward pass or backpropagation is used to adjust the weights. The goal is to determine how much each weight in the network contributed to the error in the output. Backpropagation works by computing the gradient of the error with respect to each weight by propagating the error backward through the network.
-
-The partial derivative of the output with respect to the weight $w_{ji}$ is computed using the chain rule of calculus. For a neuron in the output layer, the error gradient with respect to a weight is given by: 
+The backpropagation algorithm, which has its roots in the 1960s, became widely known after Rumelhart, Hinton, and Williams published their breakthrough paper in 1986 [@rumelhart1986learning]. Before this, training deep neural networks was difficult due to inefficient methods for adjusting weights in multiple layers. Backpropagation solved this problem by calculating the error at the output layer and propagating it backward through the network, adjusting weights layer by layer to minimize the error. Once the forward pass generates an output, the backward pass applies backpropagation to determine how much each weight contributed to the error, significantly improving the training process and leading to the rise of deep learning in later years. The partial derivative of the output with respect to the weight $w_{ji}$ is computed using the chain rule of calculus. For a neuron in the output layer, the error gradient with respect to a weight is given by: 
 $$
 \frac{\partial E}{\partial w_{ji}} = \delta_j \cdot a_i
-$$ 
+$${#eq-bp-1} 
 where:
 
-$E$ is the error associated with the output, $\delta_j$ is the error term for neuron $j$, $a_i$ is the output of the neuron in the previous layer.
+$E$ is the error associated with the output, 
+$\delta_j$ is the error term for neuron $j$, 
+$a_i$ is the output of the neuron in the previous layer.
 
 The error term $\delta_j$ for each neuron in the output layer is: 
 $$
 \delta_j = \phi'(z_j) \cdot (a_j - y_j)
-$$
+$${#eq-bp-2}
 
-where $y_j$ is the target output.
+where $y_j$ is the target output and $\phi'(z_j)$ is the derivative of the activation function at neuron $j$'s input.
 
-For neurons in the hidden layers, $delta_j$ is computed as: 
+For neurons in the hidden layers, $\delta_j$ is computed as: 
 $$
 \delta_j = \phi'(z_j) \sum_k \delta_k w_{kj}
-$$
+$${#eq-bp-3}
 
 where the sum is over all neurons $k$ in the subsequent layer that receive input from neuron $j$.
 
 ### Optimizers
 
-Optimizers are algorithms used to update the weights in a neural network to minimize the loss function and improve performance. Common optimizers include Gradient Descent, SGD, Adam and RMSProp. Optimizers determine how quickly or slowly a model learns and converge toward an optimal solution. There are various types of optimizers, each with its strengths and suited to different types of tasks and data distributions.
+Optimizers are algorithms used to update the weights in a neural network to minimize the loss function and improve performance. Common optimizers include Gradient Descent, Adam and RMSProp. Optimizers determine how quickly or slowly a model learns and converge toward an optimal solution. There are various types of optimizers, each with its strengths and suited to different types of tasks and data distributions.
 
 #### Gradient Descent
 
 Gradient descent is the optimization technique used to adjust the network weights. In its simplest form, the weights are updated as follows: 
 $$
 w_{ji}^{new} = w_{ji}^{old} - \eta \frac{\partial E}{\partial w_{ji}}
-$$
+$${#eq-gd}
 
 where:
 
@@ -214,11 +203,11 @@ $\frac{\partial E}{\partial w_{ji}}$ is the gradient of the error with respect t
 
 This process is repeated iteratively across multiple epochs, gradually adjusting the weights to reduce the overall error of the network.
 
-The error mentioned in the previous sections is formally known as the loss function $L(\theta)$, which quantifies the difference between the predicted outputs and the actual target values. Here,$\theta$ represents the network's parameters (weights and biases).
+The error mentioned here is formally known as the loss function $L(\theta)$, which quantifies the difference between the predicted outputs and the actual target values. Here, $\theta$ represents the network's parameters (weights and biases).
 
 $$
 \theta_{t+1} = \theta_t - \eta \nabla_\theta L(\theta_t)
-$$
+$${#eq-gd-loss}
 
 where $\eta$ is the learning rate, and $\nabla_\theta L(\theta_t)$ is the gradient of the loss function with respect to the parameters. The gradient $\nabla_\theta L(\theta_t)$ indicates the direction and rate of the steepest increase in the loss. By moving in the opposite direction, gradient descent reduces the loss, thereby improving the performance of the neural network. However, the success of gradient descent in deep networks relies heavily on factors such as effective weight initialization, the choice of activation functions, and strategies to mitigate challenges like overfitting and the vanishing gradient problem. The introduction of ReLU activation functions, expressed as $Relu(x)=\max(0,x)$, was instrumental in overcoming the vanishing gradient problem by ensuring that gradients remain significant in deeper layers, thus allowing for better learning and performance.
 
@@ -229,7 +218,8 @@ While gradient descent is the foundation of most optimization processes in deep 
 Stochastic Gradient Descent (SGD) is a classic optimization algorithm that updates the model's parameters based on a small random subset (or "batch") of the training data, instead of using the entire dataset like standard gradient descent. This makes the process faster and less computationally expensive. However, because SGD uses a random subset, its updates tend to be noisier, which can cause fluctuations in the loss function. Adding momentum to SGD can help smooth out these noisy updates, leading to more stable convergence. SGD updates the parameters by moving in the direction of the negative gradient of the loss function with respect to the parameters. The update rule for SGD is: 
 $$
 \theta_{t+1} = \theta_t - \eta \nabla_\theta L(\theta_t)
-$$
+$${#eq-sgd} 
+
 Where:
 
 $\theta_t$ is the parameter at time step $t$,
@@ -238,27 +228,31 @@ $\eta$ is the learning rate,
 
 $\nabla_\theta L(\theta_t)$ is the gradient of the loss function with respect to $\theta_t$.
 
-#### RMSProp (Root Mean Square Propagation)
+#### Root Mean Square Propagation
 
-RMSProp is an adaptive learning rate method that scales the learning rate of each parameter by dividing the gradient by a moving average of its recent squared values. This helps RMSProp to handle non-stationary objectives (where the data distribution changes over time) and improves convergence. It is particularly effective when dealing with mini-batch gradient descent, as it adjusts the learning rate based on how large or small the gradients are, preventing large parameter updates that can hinder training.The update rule is:
+Root Mean Square Propagation (RMSProp) is an adaptive learning rate method that scales the learning rate of each parameter by dividing the gradient by a moving average of its recent squared values. This helps RMSProp to handle non-stationary objectives (where the data distribution changes over time) and improves convergence. It is particularly effective when dealing with mini-batch gradient descent, as it adjusts the learning rate based on how large or small the gradients are, preventing large parameter updates that can hinder training.The update rule is:
 
 1.  Compute the gradients: 
     $$
     g_t = \nabla_\theta L(\theta_t)
-    $$
+    $${#eq-rms-1}
 
 2.  Update the moving average of squared gradients: 
     $$
     v_t = \beta v_{t-1} + (1 - \beta) g_t^2
-    $$
+    $${#eq-rms-2}
+
 3.  Update the parameters: 
     $$
     \theta_{t+1} = \theta_t - \frac{\eta}{\sqrt{v_t + \epsilon}} g_t
-    $$
+    $${{#eq-rms-3}}
 
 Where:
 
-$\eta$ is the learning rate, $\beta$ is the decay rate for the moving average (commonly $\beta = 0.9$), $\epsilon$ is a small constant to prevent division by zero (usually $10^{-8}$), $v_t$ is the moving average of the squared gradients.
+$\eta$ is the learning rate, 
+$\beta$ is the decay rate for the moving average (commonly $\beta = 0.9$), 
+$\epsilon$ is a small constant to prevent division by zero (usually $10^{-8}$), 
+and $v_t$ is the moving average of the squared gradients.
 
 #### Momentum
 
@@ -266,13 +260,11 @@ Momentum is a technique used in optimization algorithms to accelerate convergenc
 
 The update rule for momentum is:
 
-1.  Update the velocity (accumulated gradients): 
-    $$
+1.  Update the velocity (accumulated gradients): $$
     v_t = \beta v_{t-1} + (1 - \beta) \nabla_\theta L(\theta_t)
     $$
 
-2.  Update the parameters using the velocity: 
-    $$
+2.  Update the parameters using the velocity: $$
     \theta_{t+1} = \theta_t - \eta v_t
     $$
 
@@ -286,30 +278,30 @@ $v_t$ is the velocity (the exponentially weighted moving average of the gradient
 
 $\nabla_\theta L(\theta_t)$ is the gradient of the loss function with respect to $\theta_t$.
 
-#### Adam (Adaptive Moment Estimation)
+#### Adaptive Moment Estimation
 
-Adam is an adaptive learning rate optimization algorithm that combines the advantages of two popular methods: momentum and RMSProp. It computes individual learning rates for each parameter based on estimates of the first and second moments (mean and variance) of the gradients. This helps the optimizer adjust the learning rate dynamically based on the gradients' behavior. Adam generally works well across a wide range of tasks, making it a popular choice for deep learning applications. It also incorporates bias correction to ensure unbiased estimates in the early stages of training. Adam uses moving averages of the gradients and squared gradients for adaptive learning rates. The update rule is as follows:
+Adaptive Moment Estimation (Adam) is an adaptive learning rate optimization algorithm that combines the advantages of two popular methods: momentum and RMSProp. It computes individual learning rates for each parameter based on estimates of the first and second moments (mean and variance) of the gradients. This helps the optimizer adjust the learning rate dynamically based on the gradients' behavior. Adam generally works well across a wide range of tasks, making it a popular choice for deep learning applications. It also incorporates bias correction to ensure unbiased estimates in the early stages of training. Adam uses moving averages of the gradients and squared gradients for adaptive learning rates. The update rule is as follows:
 
 1.  Compute the gradients: 
     $$
     g_t = \nabla_\theta L(\theta_t)
-    $$
+    $${#eq-adam-1}
 2.  Update biased first moment estimate (mean of gradients): 
     $$
     m_t = \beta_1 m_{t-1} + (1 - \beta_1) g_t
-    $$
+    $${#eq-adam-2}
 3.  Update biased second moment estimate (variance of gradients): 
     $$
     v_t = \beta_2 v_{t-1} + (1 - \beta_2) g_t^2
-    $$
+    $${#eq-adam-3}
 4.  Bias correction for the first and second moments: 
     $$
     \hat{m}_t = \frac{m_t}{1 - \beta_1^t}, \quad \hat{v}_t = \frac{v_t}{1 - \beta_2^t}
-    $$
+    $${#eq-adam-4}
 5.  Update the parameters: 
     $$
     \theta_{t+1} = \theta_t - \eta \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}
-    $$
+    $${#eq-adam-5}
 
 Where:
 
@@ -323,13 +315,11 @@ $m_t$ is the exponentially weighted average of the gradients (first moment estim
 
 $v_t$ is the exponentially weighted average of the squared gradients (second moment estimate).
 
-Usually, starting with Adam is a common approach, as it is generally effective across many tasks. Experimenting with different optimizers may be necessary if better performance is needed. Fine-tuning the optimizer's specific hyperparameters (such as beta1 and beta2 in Adam) can also lead to improved results.
+Usually, starting with Adam is a common approach, as it is generally effective across many tasks. Experimenting with different optimizers may be necessary if better performance is needed. Fine-tuning the optimizer's specific hyperparameters (such as $\beta_1$ and $\beta_2$ in Adam) can also lead to improved results.
 
 ### Activation Function
 
-An activation function in neural networks is a mathematical function applied to the output of a neuron that introduces non-linearity into the model. These functions help the network learn complex patterns by allowing it to capture non-linear relationships between inputs and outputs. Activation functions determine whether a neuron should be "activated" or "fired" based on its input, controlling the flow of information in the network. Without activation functions, the model would behave like a simple linear regression and would not be able to solve more complex tasks.
-
-Below are some of the most important activation functions along with their formulas:
+An activation function in neural networks is a mathematical function applied to the output of a neuron that introduces non-linearity into the model. These functions help the network learn complex patterns by allowing it to capture non-linear relationships between inputs and outputs. Activation functions determine whether a neuron should be "activated" or "fired" based on its input, controlling the flow of information in the network. Without activation functions, the model would behave like a simple linear regression and would not be able to solve more complex tasks. Below are some of the most important activation functions along with their formulas:
 
 #### Linear Activation Function
 
@@ -337,7 +327,7 @@ The linear (or identity) activation function simply passes the input as it is wi
 
 $$
 f(x) = x
-$$
+$${#eq-af-lin}
 
 -   **Range**: (-$\infty$, $\infty$)
 -   **Common use case**: Output layer in regression tasks for predicting continuous values.
@@ -348,7 +338,7 @@ The sigmoid function maps the input to a range between 0 and 1. It’s widely us
 
 $$
 f(x) = \frac{1}{1 + e^{-x}}
-$$
+$${#eq-af-sig}
 
 -   **Range**: (0, 1)
 -   **Common use case**: Output layer in binary classification.
@@ -359,7 +349,7 @@ The tanh function maps the input to a range between -1 and 1, offering a zero-ce
 
 $$
 \tanh(x) = \frac{1 - e^{-2x}}{1 + e^{-2x}}
-$$
+$${#eq-af-tanh}
 
 -   **Range**: (-1, 1)
 -   **Common use case**: Hidden layers in many neural networks.
@@ -370,7 +360,7 @@ ReLU is one of the most commonly used activation functions in modern deep learni
 
 $$
 f(x) = \max(0, x)
-$$
+$${#eq-af-relu}
 
 -   **Range**: \[0, $\infty$)
 -   **Common use case**: Hidden layers in convolutional and fully connected networks.
@@ -381,7 +371,7 @@ Leaky ReLU is a variation of ReLU that allows a small, non-zero gradient when th
 
 $$
 f(x) = \begin{cases} x & \text{if } x > 0 \\ \alpha x & \text{if } x \leq 0 \end{cases}
-$$
+$${#eq-af-lrelu}
 
 Where $\alpha$ is a small constant (typically 0.01).
 
@@ -394,7 +384,7 @@ The sine activation function is less commonly used but can be beneficial in cert
 
 $$
 f(x) = \sin(x)
-$$
+$${#eq-af-sin}
 
 -   **Range**: (-1, 1)
 -   **Common use case**: Experimental or specific tasks requiring periodic behavior.
@@ -412,25 +402,25 @@ In many cases, standard loss functions like Mean Squared Error (MSE) for regress
 L1 loss, also known as Mean Absolute Error (MAE), is a loss function commonly used in NN models, especially for regression tasks. It measures the average of the absolute differences between predicted values and actual values. The L1 loss is robust to outliers since it penalizes errors linearly rather than quadratically like L2 loss. Minimizing L1 loss encourages sparsity in the model's parameters, making it useful in contexts such as feature selection and sparse models. The formula for L1 loss is given as:
 
 $$
-\text{MAE} = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y_i}|
-$$
+MAE = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y_i}|
+$${#eq-mae-1}
 
-Where $y$ represents the actual values, $hat{y}$ the predicted values, and $n$ is the total number of data points. The absolute value function ensures that the magnitude of the error is considered regardless of its direction.
+Where $y$ represents the actual values, $\hat{y}$ the predicted values, and $n$ is the total number of data points. The absolute value function ensures that the magnitude of the error is considered regardless of its direction.
 
 #### Mean Squared Error
 
 MSE loss or L2 loss, is one of the most commonly used loss functions in regression problems. It measures the average squared difference between the predicted values and the actual target values. MSE is particularly sensitive to large errors due to the squaring of the differences, meaning that models producing large errors are penalized more heavily. 
 $$
-\text{MSE} = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
-$$
+MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
+$${#eq-mse-1}
 
 #### Combined Loss
 
 Integrating different loss functions into deep neural networks allows for balancing various aspects of model performance. A single loss function might not capture all the essential characteristics for optimal learning. For example, one loss function $Loss_A$ might focus on robustness to outliers, while another loss function $Loss_B$ could emphasize minimizing large errors or encouraging smooth predictions. By combining these loss functions, we can leverage the strengths of both. The combined loss can be written as:
 
 $$
-\text{Combined Loss} = \alpha \cdot {Loss_A} + \beta \cdot {Loss_B}
-$$
+Combined Loss = \alpha \cdot {Loss_A} + \beta \cdot {Loss_B}
+$${#eq-loss-combi}
 
 Here, $\alpha$ and $\beta$ are non-negative hyperparameters that determine how much each loss contributes to the final combined loss. This approach allows fine-tuning to achieve a desirable trade-off between different properties, such as robustness and precision, depending on the specific task.
 
@@ -468,21 +458,29 @@ A common approach involves applying early stopping, which halts the training pro
 
 #### Dropout Rate
 
-Dropout is a regularization technique that randomly drops units (neurons) during training to prevent overfitting. The dropout rate controls the percentage of neurons to drop during each forward pass. High dropout rates can prevent the network from learning effectively, while low dropout rates might not provide enough regularization.
+Dropout is a regularization technique that randomly drops neurons during training to prevent overfitting. The dropout rate controls the percentage of neurons to drop during each forward pass. High dropout rates can prevent the network from learning effectively, while low dropout rates might not provide enough regularization.
 
 Dropout rates typically range from 0.2 to 0.5. Starting with a dropout rate of 0.3 and adjusting based on the model’s performance on the validation set is a common practice.
 
-#### Number of Layers and Units per Layer
+#### L2 Regularization
+
+L2 regularization, also known as weight decay, is a technique used to prevent overfitting by discouraging large weights in a neural network. It works by adding a penalty term to the loss function, which is proportional to the sum of the squared weights of the network. This penalty term forces the optimization process to prefer smaller weights, making the model less complex and more generalizable to unseen data.
+
+The L2 regularization term is typically scaled by a factor called the regularization parameter ($\lambda$), which controls the strength of the regularization. A larger value of $\lambda$ increases the penalty, encouraging smaller weights but potentially underfitting the model. Conversely, a smaller value of $\lambda$ reduces the penalty, allowing the network to learn more complex patterns but with the risk of overfitting.
+
+L2 regularization is commonly used alongside techniques like dropout and is often incorporated in hyperparameter tuning to find the right balance between model complexity and generalization.
+
+#### Number of Layers and Neurons
 
 The architecture of a neural network is another important aspect of hyperparameter tuning. The number of layers (depth) and units per layer (width) determine the capacity of the model to learn from data. More layers and units increase the network’s capacity but also make it more prone to overfitting and computationally expensive to train.
 
-Start with a simple architecture and gradually increase the depth and width of the network. Use techniques like grid search or random search to explore different combinations, and incorporate regularization techniques like dropout or L2 regularization to avoid overfitting.
+It's common to start with a simple architecture and then gradually increase the depth and width of the network. Techniques like grid search or random search are typically used to explore different combinations, and regularization methods such as dropout or L2 regularization are often applied to prevent overfitting.
 
 #### Weight Initialization
 
 Proper weight initialization helps the network converge faster and avoid problems like vanishing or exploding gradients. Popular initialization methods include Xavier (Glorot) initialization for sigmoid or tanh activations, and He initialization for ReLU activations.
 
-Usually, the choice of initialization depends on the activation function used. For example, He initialization is effective for layers with ReLU activations, while Xavier initialization works well with sigmoid or tanh. Fine-tuning may not be necessary unless you encounter convergence issues.
+Usually, the choice of initialization depends on the activation function used. For example, He initialization is effective for layers with ReLU activations, while Xavier initialization works well with sigmoid or tanh. Fine-tuning may not be necessary unless convergence issues are encountered.
 
 ### Hyperparameter Tuning
 
@@ -508,19 +506,19 @@ Multi-Layer Perceptron (MLP) is a type of feedforward artificial neural network 
 
 $$
 z^{(1)} = W^{(1)} {x} + b^{(1)}
-$$
+$${#eq-mlp-1}
 
 $$
-a^{(1)} = \sigma(z^{(1)})
-$$
+a^{(1)} = \phi(z^{(1)})
+$${#eq-mlp-2}
 
 $$
 z^{(2)} = W^{(2)} a^{(1)} + b^{(2)}
-$$
+$${#eq-mlp-3}
 
 $$
-\hat{y} = \sigma(z^{(2)})
-$$
+\hat{y} = \phi(z^{(2)})
+$${#eq-mlp-4}
 
 Where:
 
@@ -530,36 +528,61 @@ $W^{(1)}$ and $W^{(2)}$ are the weight matrices for the first and second layers,
 
 $b^{(1)}$ and $b^{(2)}$ are the bias vectors for the first and second layers, respectively.
 
-$\sigma$ is the activation function (e.g., sigmoid, ReLU, etc.).
+$\phi$ is the activation function (e.g., sigmoid, ReLU, etc.).
 
 and $\hat{y}$ is the final output (prediction) of the MLP.
 
-![caption](img/Chp1/mlp.png){#fig-mlp fig-align="center" width="50%"}
+![An MLP with 2 hidden layers](img/Chp1/mlp.png){#fig-mlp fig-align="center" width="50%"}
 
 ### Autoencoders
 
 An autoencoder is a type of neural network designed to learn a compressed, efficient representation of input data. It consists of two main components: an encoder and a decoder. The encoder compresses the input data into a lower-dimensional representation, often referred to as the latent space or bottleneck. The decoder then attempts to reconstruct the original input from this compressed representation. The goal is to minimize the difference between the input and the reconstructed output.
 
-![caption](img/Chp1/ae.png){#fig-ae fig-align="center" width="50%"}
+![an Autoencoder Architecture](img/Chp1/ae.png){#fig-ae fig-align="center" width="50%"}
 
-Autoencoders, used for tasks like dimensionality reduction or feature learning, can also be improved by incorporating elements such as convolutional layers, recurrent units, or Generative Adversarial Networks (GANs). This integration allows autoencoders to learn more complex data representations, enhancing their effectiveness in applications like anomaly detection or data compression
+Autoencoders, used for tasks like dimensionality reduction or feature learning, can also be improved by incorporating elements such as convolutional layers, recurrent units, or Generative Adversarial Networks (GANs). This integration allows autoencoders to learn more complex data representations, enhancing their effectiveness in applications like anomaly detection or data compression.
 
 Mathematically, the process can be represented as: 
 $$
 z = f_\theta(x)
-$$
+$${#eq-ae-1}
 
 $$
 \hat{x} = g_\phi({z})
-$$
+$${#eq-ae-2}
 
-Here, $z$ is the latent representation of the input $x$, and $\hat{x}$ is the reconstructed output. The objective of the autoencoder is to minimize the reconstruction loss, commonly measured as the mean squared error (MSE):
-
-$$
-L({x}, \hat{{x}}) = \| {x} - \hat{{x}} \|^2_2
-$$
+Here, $z$ is the latent representation of the input $x$, and $\hat{x}$ is the reconstructed output. The objective of the autoencoder is to minimize the reconstruction loss, commonly measured as the mean squared error (MSE).
 
 Autoencoders are particularly useful in areas such as dimensionality reduction and reconstruction, where they compress high-dimensional data into a lower-dimensional latent space and then accurately reconstruct the original data. They also excel in denoising by removing noise from corrupted data, and in anomaly detection by identifying outliers based on reconstruction errors. Additionally, autoencoders are valuable in generative modeling, contributing to the creation of new, similar data samples, which is especially beneficial in image synthesis and data augmentation.
+
+### Variational Autoencoders
+
+A Variational Autoencoder (VAE) is a generative model that extends the concept of autoencoders by incorporating probabilistic elements. Unlike traditional autoencoders, which learn deterministic mappings from input data to a latent space, VAEs aim to model the latent space as a probability distribution. This enables VAEs to not only reconstruct input data but also generate new samples from the learned distribution.
+
+In a VAE, the encoder maps the input data to a distribution over the latent space, typically a Gaussian distribution with mean $\mu$ and variance $\sigma^2$. Instead of directly using the encoder's output, a latent vector $z$ is sampled from this distribution. The decoder then reconstructs the input data from the sampled latent vector. This sampling introduces variability and allows VAEs to generate new data by sampling from the latent space.
+
+The VAE training objective consists of two components: the reconstruction loss (similar to a traditional autoencoder) and a regularization term that enforces the learned latent space to follow a prior distribution (commonly a standard normal distribution). This regularization is achieved through the Kullback-Leibler (KL) divergence, which measures how much the learned distribution deviates from the prior.
+
+The process is mathematically represented as:
+
+$$
+z \sim q_\phi(z|x) = \mathcal{N}(z|\mu(x), \sigma(x)^2)
+$${#eq-vae-1}
+
+$$
+\hat{x} = g_\theta(z)
+$${#eq-vae-2}
+
+Here, $q_\phi(z|x)$ is the approximate posterior distribution generated by the encoder, and $\hat{x}$ is the reconstructed output. The objective of the VAE is to minimize the total loss, which consists of the reconstruction loss and the KL divergence:
+
+$$
+\mathcal{L}_{\text{VAE}} = \mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x|z)] - D_{\text{KL}}(q_\phi(z|x) \| p(z))
+$${#eq-vae-3}
+
+- The first term is the reconstruction loss, encouraging accurate reconstruction of input data.
+- The second term is the KL divergence, ensuring that the learned latent space distribution stays close to the prior distribution $p(z)$.
+
+Variational Autoencoders are widely used in generative tasks such as image synthesis, data augmentation, and anomaly detection. By sampling from the learned latent space, VAEs can generate new data points that resemble the original dataset, making them a powerful tool for creating realistic data in various domains.
 
 ### Convolutional Neural Networks
 
@@ -567,27 +590,32 @@ Convolutional Neural Networks (CNNs) are a class of deep neural networks specifi
 
 $$
 y = f * x + b
-$$
+$${#eq-cnn-1}
 
 where $y$ is the output feature map, $f$ is the filter, $*$ denotes the convolution operation, $x$ is the input, and $b$ is the bias term. This operation allows the network to detect patterns such as edges, textures, and shapes in the input data.
 
-![caption](img/Chp1/conv.png){#fig-conv fig-align="center" width="30%"}
+![Convolution operation](img/Chp1/conv.png){#fig-conv fig-align="center" width="30%"}
 
 A typical CNN architecture consists of multiple layers, including convolutional layers, pooling layers, and fully connected layers. Convolutional layers apply filters to the input to extract features, while pooling layers perform down-sampling, reducing the spatial dimensions of the data. A common pooling operation is max pooling, defined as:
 
 $$
 y_{i,j} = \max_{m,n} (x_{i+m,j+n})
-$$
+$${#eq-max}
 
 where $y_{i,j}$ represents the output after pooling, and $x_{i+m,j+n}$ is the region of the input over which the pooling operation is applied. The final fully connected layers combine the features extracted by the convolutional and pooling layers to make predictions, typically using a softmax function for classification:
 
 $$
 \text{softmax}(z_i) = \frac{e^{z_i}}{\sum_{j=1}^{K} e^{z_j}}
-$$
+$${#eq-softmax}
 
-where $z_i$ is the input to the softmax function, and $K$ is the number of classes.
+This equation represents the softmax function, where:
 
-![caption](img/Chp1/CNN.png){#fig-cnn-layers fig-align="center" width="50%"}
+$z_i$ is the input to the softmax function for the $i$-th class.
+$K$ is the total number of classes.
+
+The output of the softmax function is the probability distribution over $K$ classes, with each value $z_i$ transformed into a probability between 0 and 1.This ensures that the sum of all output probabilities equals 1, making it useful for multi-class classification.
+
+![CNN Architecture for image classification](img/Chp1/CNN.png){#fig-cnn-layers fig-align="center" width="50%"}
 
 CNNs are widely used in various applications, including image classification, object detection, and image segmentation. Their ability to automatically learn and extract features from raw pixel data has led to significant advancements in computer vision. The modularity of CNNs allows them to be easily adapted to different tasks by adjusting the architecture, such as changing the number of layers or the size of filters. This flexibility, combined with their high accuracy and efficiency, makes CNNs a cornerstone of modern deep learning applications.
 
@@ -599,7 +627,7 @@ Consider a standard neural network where the input data is $x$ and the output is
 
 $$
 f_{\theta}({x}, {c}) = {y}
-$$
+$${#eq-cond}
 
 Here, $c$ is the condition that influences the network's output. This condition could be a class label, a set of parameters, or any other contextual information relevant to the task.
 
@@ -607,7 +635,7 @@ If a neural network is designed to perform a specific task on a dataset, and we 
 
 $$
 {y} = G_{\theta}({x}, {c})
-$$
+$${#eq-gen}
 
 Where $G_\theta$ is the generator function of the Conditional Neural Network.
 
@@ -615,17 +643,22 @@ The loss function in a Conditional Neural Network often takes the condition into
 
 $$
 L_\theta = \frac{1}{N} \sum_{i=1}^{N} \ell\left(f_{\theta}({x}_i, {c}_i), {y}_i\right)
-$$
+$${#eq-cond-gen}
 
 Where $\ell$ is a suitable loss function (e.g., cross-entropy or mean squared error), $N$ is the number of training examples, and $y_i$ is the true output corresponding to input $x_i$ under condition $c_i$.
 
-![caption](img/Chp1/cvae.png){#fig-cvae fig-align="center" width="50%"}
+![Conditional Variational Autoencoder](img/Chp1/cvae.png){#fig-cvae fig-align="center" width="50%"}
 
 Conditional Neural Networks are widely used in various applications, such as conditional image generation, style transfer, and structured prediction tasks. Their ability to incorporate context or conditions makes them highly versatile and effective for problems where the output must be tailored based on specific criteria. This flexibility allows conditions to be added to various architectures, whether it's a convolutional network or any other type, broadening their applicability.
 
 ## Research Questions
+So far, the research topic has been discussed, and preliminary discussions have been made regarding familiarization with FEM and the existing challenges. Additionally, we provided a brief overview of neural networks and their components, as well as commonly used algorithms and key considerations. This research has been conducted to answer the following questions: 
 
--   Investigating how implicit representations can replace traditional mesh processing methods in 3D models, and examining the potential benefits of continuous model representations.
--   Developing techniques to balance neural network size, accuracy, and computational efficiency when representing complex and dynamic 3D data.
+-   combine NN and 3D data for modeling the object deformation
+-   investigating the best match for modeling the 3D data and neural networks to develop techniques to balance neural network size, accuracy, and computational efficiency
+-   Investigating how implicit representations can replace traditional mesh processing methods in 3D models
+-   examining the potential benefits of continuous model representations
 -   Identifying methods to reduce simulation times for complex 3D models using implicit representations
 -   Deriving and optimizing an accurate set of process parameters from neural networks for handling the dynamics of 3D shapes, particularly for real-time applications.
+  
+In the next chapter, the work done in the area of the Finite Element Method using AI techniques will be reviewed. The next chapter will address data, covering various forms of 3D representation and datasets, as well as the steps taken in generating them. Additionally, the chapter will detail the preparation of the data for training the neural network. In the following chapter, single-step deformation will be examined, focusing on both shell meshes and solid meshes. Multi-step deformation will then be explored in the subsequent chapter, incorporating reinforcement learning to enhance the process using mesh data, image data and 3D implicit fields. Finally, the research will conclude with a comprehensive analysis of the results and insights derived from the study.

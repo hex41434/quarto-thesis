@@ -4,7 +4,7 @@
 
 keywords: Structural Analysis Finite Element Analysis/Method Deep Neural Networks Neural Encoding Implicit Representations Signed Distance Functions/ Fields
 
-## some other AI suggestions for the title:
+## some AI suggestions for the title:
 
 -   "Beyond Finite Element Methods: Harnessing Deep Learning and Implicit Representations for Efficient 3D Deformation in Structural Analysis"
 

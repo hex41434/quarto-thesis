@@ -108,3 +108,10 @@ $x$ is the original value,
 $min(x)$ and $max(x)$ are the minimum and maximum values in the dataset, respectively (for normalization),
 $\mu$ is the mean of the dataset,
 $\sigma$ is the standard deviation of the dataset.
+
+
+| Zt  | number of  Simulations | number of faces in mesh |
+|-----|------------------------|-------------------------|
+| 30  | 500                    | 26759                   |
+| 50  | 250                    | 28587                   |
+| 70  | 250                    | 31976                   |
