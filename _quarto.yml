@@ -3,7 +3,7 @@ project:
   output-dir: ./docs
 
 book:
-  title: "Implicit Neural Representations for 3D Deformation: A Deep Learning Approach to Finite Element Method Replacement"
+  title: "Implicit Neural Representations for 3D Deformation: A Deep Learning Approach to Finite Element Method Distillation"
   author:
     - name: Aida Farahani 
       email: aida.farahani@informatik.tu-chemnitz.de
@@ -41,6 +41,7 @@ bibliography: references.bib
 csl: assets/frontiers.csl
 number-sections: true
 highlight-style: github
+jupyter: python3
 
 format:
   html:

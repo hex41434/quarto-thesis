@@ -1,10 +1,8 @@
 # Single Step Deformation {#sec-ssd}
 
+Note: here the mesh was very dense, so the nn would consider it as a continuous rep. however contrary to PC methods, the points are individually provided to the network!
+
 ## Introduction
-
-Deformation refers to the change in shape, size, or position of a material or structure when subjected to external forces, such as tension, compression, shear, bending, or torsion. This alteration occurs due to the displacement of particles within the material, resulting in either elastic deformation, where the material returns to its original shape after the removal of the force, or plastic deformation, where the change is permanent. Single-step deformation (SSD) in our context refers to the process of applying a force to a structure or material in a single instance, resulting in a one-time deformation.
-
-In practice, what engineers do is resort to simulations to reduce costs and increase accuracy and speed, using tools like Finite Element Methods (FEM) for this purpose. An expert needs to design the geometry in the software, perform meshing, and then define the fixed and force constraints. After that, they must select the material and choose an appropriate solver, depending on the complexity of the geometry and the problem, as well as the computational power available, and then wait for the simulation results. This process can even take several days, and in the end, the expert evaluates the parameters based on the simulation results. It is usually necessary for the expert to adjust some parameters (based on their experience and knowledge) and rerun the simulation. As it might seem, this can be a challenging process for experts. Moreover, in industry, this can be quite costly because, alongside powerful equipment, a significant amount of time and energy from an expert is required to address a single problem. Therefore, any improvement in this process can be very beneficial and profitable.
 
 The meshing process plays a crucial role in simulations. For the meshes to be effective, they need to meet specific criteria. Often, they’re created with high density to ensure that complex shapes, like curves and corners, are captured accurately. Additionally, the mesh elements must have an appropriate aspect ratio to perform well in simulations. This can sometimes lead to the need for re-meshing, where the mesh is adjusted to better fit the requirements of the analysis. 
 

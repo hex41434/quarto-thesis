@@ -94,14 +94,14 @@ Data preprocessing is one of the most critical steps in the machine learning pro
 Normalization is the process of scaling the data so that it fits within a specific range, typically between 0 and 1 or -1 and 1. This technique is particularly useful when the data features have different scales, and we want to bring them to a common scale. Normalization is often used when the model does not assume any particular distribution of the data and when all features should contribute equally. The formula for min-max normalization is:
 $$
 x_{\text{norm}} = \frac{x - \min(x)}{\max(x) - \min(x)}
-$$
+$${#eq-norm}
 
 ### Standardization
 Standardization, also known as Z-score normalization, transforms the data to have a mean of 0 and a standard deviation of 1. This technique is especially effective when the data follows a Gaussian (normal) distribution or when the model assumes normally distributed data. Standardization is beneficial for algorithms that rely on the distribution of data, such as logistic regression or neural networks, as it helps in stabilizing and speeding up the training process.The formula for standardization is:
 
 $$
 x_{\text{std}} = \frac{x - \mu}{\sigma}
-$$
+$${#eq-stndrd}
 
 Where:
 $x$ is the original value,

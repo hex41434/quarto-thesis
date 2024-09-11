@@ -7,11 +7,12 @@ keywords: Structural Analysis Finite Element Analysis/Method Deep Neural Network
 ## some AI suggestions for the title:
 
 -   "Beyond Finite Element Methods: Harnessing Deep Learning and Implicit Representations for Efficient 3D Deformation in Structural Analysis"
-
 -   "Reimagining Structural Analysis: Deep Learning and Implicit Representations for 3D Deformation Beyond Finite Element Methods"
-
 -   "Exploring Deep Learning and Implicit Representations for Efficient 3D Deformation: Beyond Finite Element Methods for Structural Analysis"
-
 -   "Advanced 3D Deformation Modeling with Deep Learning utilizing Implicit Representations : Moving Beyond Finite Element Methods"
-
 -   "Efficient 3D Deformation Modeling with Deep Learning utilizing Implicit Representations: Enhancing Finite Element Methods for Structural Analysis"
+
+-   "Implicit Neural Representations for 3D Deformation: Accelerating Finite Element Methods with Deep Learning"
+-   "Deep Learning-Based Implicit Neural Representations for Efficient 3D Deformation and Finite Element Method Distillation"
+-   "Implicit Neural Representations for 3D Deformation: Enhancing Finite Element Method with Deep Learning"
+-   "From Finite Element Method to Neural Networks: Implicit Representations for Efficient 3D Deformation Modeling"
