@@ -14,25 +14,11 @@ Another excellent approach is **Curvature-Based Re-Meshing**, which focuses on 
 
 On the other hand, it is evident that with re-meshing, the mesh can no longer remain fixed, and at each stage, we encounter a new mesh depending on the requirements. This poses a challenge for using meshes in neural network modeling, as methods based on meshes with consistent topology become very limited. This was a strong reason for us to explore alternative methods that could define the geometry of the object and present it to the neural network independently of the mesh. Among the studied methods, implicit models showed better compatibility with neural networks. However, so far, not much work has been done on deformation using this type of data, which made the task more challenging.
 
-In DeepSDF paper, it was demonstrated that a neural network is capable of encoding a 3D object (and a series of 3D objects). In this scenario, the neural network acts as a function, where, after training, the network can be queried to determine the distance of any arbitrary point from the surface. By querying the network for a sufficient number of points, we can generate a point cloud, where the distances of these points from the surface are estimated by the neural network. This point cloud allows us to determine the surface boundary of the desired object.
-
-\[add image of deepsdf , codes, chairs and autodecoder \]
-
-Furthermore, to generalize across a larger set of objects, a condition was introduced to the neural network. This condition, which is essentially a code, is defined for each object, enabling the SDF function to return the corresponding distance for each point based on this condition. \[more information in section X regarding this coding and autodecoder process\] This adjustment allowed DeepSDF to encode a wider range of objects. In our case, the focus is not on different classes of objects but rather on the deformations of a single object. Therefore, the condition-defining code can be the force vector that causes the deformation. With this setup, we will have a neural network that, conditioned on the force, can predict the deformations of a single object.
-
-\[add image of NN , deformations , query on points, force as condition\]
-
-\[add image of NN , chair , query\]
-
-In this study, each shape is encoded using an autodecoder and fed as a reference - or condition - to the network, allowing the network to encode a wider range of objects. As shown in the image, at the top, two codes corresponding to two objects (leftmost and rightmost ones) are encoded by the network, forming the shapes of a sofa and a chair. By interpolating these codes, we observe a subtle transition between the sofa and the chair, with the reconstructed shapes visible on top. Instead of applying this concept to classes of different objects, we applied it to deformed versions of one object. This way, the network can generate the desired deformed version of an object based on the code, which represents the force applied to the object.
-
 ![image caption](img/Chp3/interpolate_sdf_codes.png){#fig-sdf-interpolate fig-align="center" width="70%"}
 
 ### SSD on Watertight Mesh
 
 For each object, the SDF function divides the space into three regions: points with positive distances, which are outside the object; points with negative distances, which are inside the object; and boundary points, which lie on the surface. Therefore, it is necessary for the object to have a closed or watertight geometry.
-
-To model deformation and train the neural network, data samples were needed that depicted various states of a 3D object along with the force vectors applied to it. as explained in the previous chapter, The initial shape was kept constant across all data samples, and the intended deformation was achieved by applying a force in a single step. The model being developed was required to estimate the final shape based on the input force vector. At this stage, a neural network model inspired by DeepSDF was designed using **Dataset 1**, with the aim of estimating the corresponding "signed distance" for any given point in space. Ultimately, by querying a large number of points, a set of SDF values was obtained, which were then converted into a mesh using discretization methods such as Marching Cubes, providing an estimate of the final deformed shape.
 
 **SDF Function Estimation:**
 

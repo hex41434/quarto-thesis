@@ -708,7 +708,7 @@ This equation represents the softmax function, where:
 
 $z_i$ is the input to the softmax function for the $i$-th class. $K$ is the total number of classes.
 
-The output of the softmax function is the probability distribution over $K$ classes, with each value $z_i$ transformed into a probability between 0 and 1.This ensures that the sum of all output probabilities equals 1, making it useful for multi-class classification.
+The output of the softmax function is the probability distribution over $K$ classes, with each value $z_i$ transformed into a probability between 0 and 1. This ensures that the sum of all output probabilities equals 1, making it useful for multi-class classification.
 
 ![CNN Architecture for image classification](img/Chp1/CNN.png){#fig-cnn-layers fig-align="center" width="50%"}
 
