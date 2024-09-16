@@ -34,7 +34,7 @@ To perform FEM simulations in FreeCAD, the following steps were followed:
 
 -   Solving Equations: the solver CalculiX was used to solve the FEM equations and obtain the deformation results for each force vector.
 
-### DefBeam Dataset (Deformed Beam)
+### DefBeam Dataset (Deformed Beam) {#sec-dataset-defbeam}
 
 The output of FEM is typically a deformed mesh, which is a structure used to represent 3D data. A mesh is a special type of graph characterized by its vertices, edges, and faces, making it an excellent and popular data structure for representing 3D data with various complexities and curvatures, especially useful for depicting deformations.
 
@@ -51,6 +51,8 @@ However, by manipulating the **INP** file and accessing the displacement vecto
 A cube with a larger surface area and shorter height was considered, fixed from the bottom. Random force vectors were applied to the surface and perpendicular to it at various points with different magnitudes. The deformation results were recorded for each step. Since these forces were applied sequentially to the object, it was necessary to save the current mesh (state) and the corresponding force (action) alongside the deformed mesh (next state) which added complexity to the dataset construction process. To generate a sufficient number of state-action pairs, a maximum of \[specified number\] steps was set. Starting from an initial cuboid (without deformation), various forces were applied at different points within a loop, causing the deformed shape to undergo further deformations. If the deformation reached a level that made the generation of a new mesh impossible, the process was halted and restarted from the new shape. However, if no issues were encountered, state-action pairs were generated up to the specified maximum number.
 
 The dataset contained X pair of triangle meshes with identical topology, X vertices, and dimensions of \[specified dimensions\]. In the image, examples of the generated meshes can be observed.
+
+** Additionally, the data had to be prepared in a way that preserves the sequence of states. To achieve this, a fixed SDF grid was used for the dataset, allowing the sequence of deformations to be maintained.
 
 ### DefImage (Deformed Image)
 

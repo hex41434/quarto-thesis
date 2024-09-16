@@ -747,7 +747,7 @@ Where $\ell$ is a suitable loss function (e.g., cross-entropy or mean squared er
 Conditional Neural Networks are widely used in various applications, such as conditional image generation, style transfer, and structured prediction tasks. Their ability to incorporate context or conditions makes them highly versatile and effective for problems where the output must be tailored based on specific criteria. This flexibility allows conditions to be added to various architectures, whether it's a convolutional network or any other type, broadening their applicability.
 
 
-## Leveraging Deep Neural Networks for 3D Data
+## An Overview : 3D Deep Learning {#sec-dnn-3d-reps}
 
 As we navigate a world inherently shaped by three dimensions, it's exciting to see how modern algorithms and computational tools are increasingly harnessing the full potential of 3D data. While early strides in artificial intelligence primarily focused on processing images, audio, and text, there has been a remarkable shift toward exploring the complexities of the 3D domain, opening new frontiers for innovation and discovery. According to @ahmed2018survey, 3D data processing using deep learning has become increasingly important in fields such as computer vision, robotics, and virtual reality, driving advancements in object recognition, spatial understanding, and immersive experiences. The way 3D data is represented plays a critical role in the design of models, the training process, and the final output. Depending on how the data is structured and represented, 3D deep learning can be categorized into several approaches. The most common representations include point clouds, meshes, and multi-view images, which are considered explicit forms of 3D data. Each of these representations has its unique challenges and benefits, influencing the choice of network architecture and the methods used for training.
 
@@ -894,3 +894,91 @@ In Surface Nets, the 3D space is divided into a grid, similar to Marching Cubes.
 Once these vertices are placed, they are connected to form a mesh of quads or triangles, representing the surface of the shape. Surface Nets have the advantage of producing smoother surfaces with fewer vertices compared to Marching Cubes, especially in areas where the surface is relatively flat. Additionally, because it doesn't require complex computations to preserve sharp features, Surface Nets is simpler and faster than methods like Dual Contouring.
 
 However, Surface Nets might not capture sharp features as accurately as Dual Contouring, making it more suitable for applications where smooth surfaces are more critical than precise feature preservation. Its simplicity and efficiency make it a good choice for applications like real-time rendering or scenarios where computational resources are limited.
+
+## Reinforcement Learning
+
+Reinforcement Learning (RL) is a type of machine learning where an agent learns to make decisions by performing actions in an environment to maximize cumulative rewards. Unlike supervised learning, where the model learns from labeled data, RL relies on the trial-and-error approach, continuously interacting with the environment to improve its policy.
+
+Key Concepts in Reinforcement Learning:
+
+**Agent**: The learner or decision maker.
+
+**Environment**: Everything the agent interacts with.
+
+**State** (s): A representation of the current situation of the agent in the environment.
+
+**Action** (a): All possible moves the agent can take.
+
+**Reward** (r): Feedback from the environment based on the action taken by the agent.
+
+**Policy** (π): A strategy that defines the agent's action selection, mapping states to actions.
+
+**Value Function** (V): Estimates the expected reward for an agent starting from a state and following a policy.
+
+**Q-Value** (Q): Estimates the expected reward for taking an action in a state and following a policy thereafter.
+
+The RL process begins with the agent starting with an initial policy, which is often random. The agent then interacts with the environment by taking actions based on this policy. After each action, the agent receives feedback in the form of a reward and observes the new state. Using this feedback, the agent updates its policy, aiming to maximize future rewards. This process repeats iteratively, with the policy improving over time as the agent gains more experience.
+
+Reinforcement Learning can be categorized into model-based and model-free approaches. Model-based RL involves learning a model of the environment's dynamics to plan and make decisions, while model-free RL relies solely on learning from interactions with the environment without an explicit model. Several algorithms help in learning the optimal policy in these approaches. Q-Learning is a value-based method where the agent learns the Q-values for state-action pairs and uses them to make decisions. Deep Q-Networks (DQN) combine Q-learning with deep neural networks to handle high-dimensional state spaces. Policy Gradient Methods directly optimize the policy by adjusting it in the direction that increases expected rewards. Actor-Critic Methods combine value-based and policy-based methods, with an actor making decisions and a critic evaluating them.
+
+### World Models in Reinforcement Learning
+
+World models are an advanced concept in reinforcement learning that involve creating an internal model of the environment. This model allows the agent to predict future states and outcomes based on its current state and actions, effectively simulating the environment internally. By leveraging world models, agents can plan and make decisions more efficiently, even in complex and high-dimensional spaces.
+
+World models offer several advantages in reinforcement learning. By simulating the environment internally, agents can learn and plan more efficiently, reducing the need for extensive real-world interactions. This internal simulation enables better exploration strategies, allowing agents to evaluate the consequences of exploratory actions without performing them in the real environment. World models are particularly useful in handling complex environments with high-dimensional state spaces or intricate dynamics, where model-free methods might struggle.
+
+Applications of world models span various domains, including robotics, where they are used for planning and control tasks that require an understanding of the environment's dynamics; autonomous driving, where they help predict and react to the behavior of other vehicles and pedestrians; and game playing, where they enhance performance in complex strategy games by simulating future game states and planning accordingly.
+
+The workflow of a world model-based agent involves data collection through interactions with the environment, model learning to develop perception, transition, and reward models, state inference using the perception module, planning by simulating future states and rewards, and action execution in the real environment. By integrating world models into reinforcement learning, agents achieve more robust and intelligent behavior, making them well-suited for complex and dynamic tasks.
+
+![image caption](img/Chp3/Planet.png){#fig-planet fig-align="center" width="50%"}
+
+### PlaNet: Learning Latent Dynamics for Planning from Pixels
+
+The paper "Learning Latent Dynamics for Planning from Pixels" presents a novel approach to model-based reinforcement learning that addresses the challenge of planning in environments with high-dimensional observations, such as images. The authors introduce the Deep Planning Network (PlaNet), an agent that learns a world model from image inputs and leverages it for planning. This method combines the benefits of model-free and model-based approaches, allowing for data-efficient learning and effective planning in complex environments.
+
+
+At the core of PlaNet is a latent dynamics model that consists of several components: (1) a representation model that encodes observations into a compact latent state, (2) a transition model that predicts the next latent state given the current state and action, (3) a reward model that predicts the immediate reward, and (4) an observation model that reconstructs the image observation from the latent state. These components are trained jointly using variational inference, maximizing a lower bound on the log-likelihood of the observed data.
+
+The planning process in PlaNet is performed entirely in the learned latent space, which is significantly more compact than the original image space. The agent uses the Cross-Entropy Method (CEM) to optimize action sequences that maximize predicted rewards over a finite horizon. This planning process is repeated at each time step in a receding horizon fashion, allowing the agent to adapt its plan based on new observations. The authors demonstrate that PlaNet outperforms both model-free and model-based baselines on several challenging continuous control tasks, achieving high performance from pixels with remarkably sample efficiency.
+
+The significance of this work lies in its ability to learn effective world models from high-dimensional inputs without any environment-specific inductive biases. This makes PlaNet applicable to a wide range of tasks without requiring task-specific engineering. Moreover, the latent space planning approach enables the agent to reason about future states and rewards in a computationally efficient manner, overcoming the limitations of planning directly in image space. The paper's results suggest that this approach could be a promising direction for scaling reinforcement learning to more complex, real-world tasks where sample efficiency and the ability to plan from raw sensory inputs are crucial.
+
+### Perception Module
+
+The perception module processes raw sensory inputs from the environment and transforms them into more compact and useful representations. This typically involves using neural networks such as autoencoders. By efficiently encoding sensory information, the perception module helps the agent understand and navigate its environment more effectively.
+
+### Transition Model
+
+The transition model, also known as the dynamics model, predicts the next state given the current state and action. It captures the temporal dynamics of the environment and can be implemented using various types of neural networks, including state space models. This model allows the agent to simulate future states and understand how its actions affect the environment over time.
+
+### Reward Model
+
+The reward model predicts the expected reward for a given state-action pair. By understanding the reward structure of the environment, the agent can better evaluate the potential benefits of different actions. This helps the agent to make decisions that maximize long-term rewards, guiding it towards achieving its goals more effectively.
+
+### Planning Module
+
+With the internal model of the environment, the agent can simulate different action sequences to plan its moves. This planning is often done using model-based algorithms such as Monte Carlo Tree Search (MCTS), trajectory optimization methods, or the Cross Entropy Method (CEM). MCTS explores possible future states by building a search tree, trajectory optimization refines action sequences to maximize rewards, and CEM generates and evaluates a population of action sequences, iteratively refining them based on the best performers. By utilizing these methods, the agent can effectively predict future states and rewards, allowing it to choose actions that optimize its long-term success.
+
+![image caption](img/Chp3/CEM_1.png){#fig-cem fig-align="center" width="50%"}
+
+**Caption:** Formulas representing key components of world models in reinforcement learning, including
+
+the perception module: 
+$$ 
+z = f_\text{perception}(x)
+$$
+
+the transition model : 
+$$ 
+s_{t+1} = f_\text{transition}(s_t, a_t)
+$$
+
+the reward model : 
+$$ 
+r_t = f_\text{reward}(s_t, a_t)
+$$
+and the planning module : 
+$$
+\text{Best Action Sequence} = \arg\max_{a_1, a_2, \ldots, a_T} \sum_{t=1}^{T} f_\text{reward}(s_t, a_t)
+$$
