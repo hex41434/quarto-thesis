@@ -944,19 +944,19 @@ The planning process in PlaNet is performed entirely in the learned latent space
 
 The significance of this work lies in its ability to learn effective world models from high-dimensional inputs without any environment-specific inductive biases. This makes PlaNet applicable to a wide range of tasks without requiring task-specific engineering. Moreover, the latent space planning approach enables the agent to reason about future states and rewards in a computationally efficient manner, overcoming the limitations of planning directly in image space. The paper's results suggest that this approach could be a promising direction for scaling reinforcement learning to more complex, real-world tasks where sample efficiency and the ability to plan from raw sensory inputs are crucial.
 
-### Perception Module
+**Perception Module**
 
 The perception module processes raw sensory inputs from the environment and transforms them into more compact and useful representations. This typically involves using neural networks such as autoencoders. By efficiently encoding sensory information, the perception module helps the agent understand and navigate its environment more effectively.
 
-### Transition Model
+**Transition Model**
 
 The transition model, also known as the dynamics model, predicts the next state given the current state and action. It captures the temporal dynamics of the environment and can be implemented using various types of neural networks, including state space models. This model allows the agent to simulate future states and understand how its actions affect the environment over time.
 
-### Reward Model
+**Reward Model**
 
 The reward model predicts the expected reward for a given state-action pair. By understanding the reward structure of the environment, the agent can better evaluate the potential benefits of different actions. This helps the agent to make decisions that maximize long-term rewards, guiding it towards achieving its goals more effectively.
 
-### Planning Module
+**Planning Module**
 
 With the internal model of the environment, the agent can simulate different action sequences to plan its moves. This planning is often done using model-based algorithms such as Monte Carlo Tree Search (MCTS), trajectory optimization methods, or the Cross Entropy Method (CEM). MCTS explores possible future states by building a search tree, trajectory optimization refines action sequences to maximize rewards, and CEM generates and evaluates a population of action sequences, iteratively refining them based on the best performers. By utilizing these methods, the agent can effectively predict future states and rewards, allowing it to choose actions that optimize its long-term success.
 
